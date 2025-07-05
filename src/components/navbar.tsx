@@ -16,7 +16,7 @@ export default function Navbar() {
       className="fixed inset-x-0 top-4 z-50 h-16 border-none transition-all duration-700 sm:inset-x-6"
     >
       <header className="absolute top-1/2 w-full -translate-y-1/2">
-        <nav className="relative z-10 px-12 py-4">
+        <nav className="relative z-10 px-16 py-4">
           <div className="mx-auto flex items-center justify-between">
             <div className="flex items-center ">
               <Image src={logo} alt="vocalize-logo" />
@@ -37,7 +37,7 @@ export default function Navbar() {
                 ))}
               </div>
 
-              <div className="flex items-center space-x-3 md:mx-6">
+              <div className="flex items-center space-x-3 md:mx-16">
                 <Button
                   variant="ghost"
                   className="text-white hover:bg-white/10 border border-white/20 cursor-pointer"

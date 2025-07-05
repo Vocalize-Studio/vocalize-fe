@@ -158,6 +158,14 @@
   .nav-hover-btn {
     @apply relative ms-10 text-xs uppercase text-blue-50 after:absolute after:-bottom-0.5 after:left-0 after:h-[2px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-neutral-200 after:transition-transform after:duration-300 after:ease-[cubic-bezier(0.65_0.05_0.36_1)] hover:after:origin-bottom-left hover:after:scale-x-100 dark:after:bg-white cursor-pointer;
   }
+
+  .footer-hover-btn {
+    @apply text-white transition duration-300 cursor-pointer;
+  }
+
+  .footer-hover-btn:hover {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-700;
+  }
   .button-vocalize {
     @apply bg-gradient-to-r from-blue-300 to-blue-500 bg-clip-text text-transparent hover:from-blue-400 hover:to-blue-700 transition duration-300 cursor-pointer;
   }
@@ -212,5 +220,24 @@
   .input-glow:focus {
     box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
     border-color: #fff;
+  }
+  .border-gradient-right {
+    position: relative;
+    background: linear-gradient(150deg, #c2d8fc 0.07%, #3b82f6 91.89%);
+    border-radius: 0 16px 16px 0;
+    padding: 4px;
+  }
+
+  .border-gradient-right::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    background: #1f2937;
+    border-radius: 0 12px 12px 0;
+    z-index: -1;
+  }
+  .cta-card-shadow {
+    border-radius: 40px;
+    box-shadow: 0px 7px 22.3px 11px rgba(0, 0, 0, 0.25);
   }
 }
