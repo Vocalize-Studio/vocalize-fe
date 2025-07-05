@@ -6,11 +6,11 @@ import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { Card } from "./ui/card";
 
 export default function AudioComparisonSection() {
-  const [currentTrack, setCurrentTrack] = useState(1);
+  const [currentTrack, setCurrentTrack] = useState<number>(1);
   const [activeVersion, setActiveVersion] = useState<"original" | "vocalized">(
     "vocalized"
   );
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   const tracks = [
     {
@@ -49,12 +49,14 @@ export default function AudioComparisonSection() {
       <div className="container mx-auto max-w-6xl">
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold text-black">
-            Hear the Difference <span className="text-gradient-vocalize-contrast">Vocalize</span> {" "}
+            Hear the Difference{" "}
+            <span className="text-gradient-vocalize-contrast">Vocalize</span>{" "}
             Makes
           </h2>
           <p className="text-xl text-gray-400 max-w-4xl mx-auto">
-            Listen to the journey from a simple recording to a powerful,
-            studio-quality song with just one click.
+            Listen to the journey from a simple recording to a{" "}
+            <span className="text-black">powerful, studio-quality song</span>
+            with just one click.
           </p>
         </div>
         <div className="max-w-4xl mx-auto">

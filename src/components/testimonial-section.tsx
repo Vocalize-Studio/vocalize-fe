@@ -23,7 +23,7 @@ const testimonials: Testimonial[] = [
     role: "User Vocalize",
     quote:
       "I sang a melody, chose a style, and a few minutes later I had a complete, radio-ready song. Vocalize literally creates music from just your voice, it's insane!",
-    image: "/placeholder.svg?height=120&width=120",
+    image: "https://i.pravatar.cc/150?img=1",
   },
   {
     id: 2,
@@ -31,7 +31,7 @@ const testimonials: Testimonial[] = [
     role: "Music Producer",
     quote:
       "This platform revolutionized my creative process. I can now produce professional-quality demos in minutes instead of spending weeks in expensive studios.",
-    image: "/placeholder.svg?height=120&width=120",
+    image: "https://i.pravatar.cc/150?img=2",
   },
   {
     id: 3,
@@ -39,7 +39,7 @@ const testimonials: Testimonial[] = [
     role: "Content Creator",
     quote:
       "As a content creator, I needed quick background music for my videos. Vocalize gives me unlimited, royalty-free tracks that perfectly match my content style.",
-    image: "/placeholder.svg?height=120&width=120",
+    image: "https://i.pravatar.cc/150?img=3",
   },
   {
     id: 4,
@@ -47,7 +47,7 @@ const testimonials: Testimonial[] = [
     role: "Singer-Songwriter",
     quote:
       "My students love experimenting with AI music creation. It's an incredible tool for teaching music composition and inspiring creativity.",
-    image: "/placeholder.svg?height=120&width=120",
+    image: "https://i.pravatar.cc/150?img=4",
   },
 ];
 
@@ -56,13 +56,13 @@ export function TestimonialSection() {
   const { currentIndex, direction, goToNext, goToPrevious, goToIndex } =
     useMultiStep(testimonials);
 
-  useAutoplay(goToNext, 4000);
+  useAutoplay(goToNext, 6000);
   useCarouselAnimation(contentRef, direction, [currentIndex, direction]);
 
   const current = testimonials[currentIndex];
 
   return (
-    <section className=" bg-gray-50 min-h-screen w-full flex items-center justify-center">
+    <section className=" bg-gray-50 h-screen w-full flex items-center justify-center">
       <div className="container w-full mx-auto">
         <div className="w-full max-w-7xl mx-auto px-12">
           <div className="flex items-center justify-between">
@@ -70,7 +70,7 @@ export function TestimonialSection() {
               variant="ghost"
               size="icon"
               onClick={goToPrevious}
-              className="text-gray-800 hover:bg-gray-200 w-20 h-20 rounded-full"
+              className="text-gray-800 hover:bg-gray-200 w-20 h-20 rounded-full cursor-pointer"
             >
               <ChevronLeft className="w-12 h-12" strokeWidth={5} />
             </Button>
@@ -107,7 +107,7 @@ export function TestimonialSection() {
               variant="ghost"
               size="icon"
               onClick={goToNext}
-              className="text-gray-800 hover:bg-gray-200 w-20 h-20 rounded-full"
+              className="text-gray-800 hover:bg-gray-200 w-20 h-20 rounded-full cursor-pointer"
             >
               <ChevronRight className="w-16 h-16" strokeWidth={5} />
             </Button>
