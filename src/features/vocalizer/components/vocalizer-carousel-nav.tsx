@@ -25,7 +25,7 @@ export default function VocalizerCarouselNav({
       </Button>
 
       <div className="mx-8">
-        <span className="text-lg font-medium text-gray-500">
+        <span className="text-lg font-medium text-[#252525] font-montserrat ">
           {activeVersion.toUpperCase()}
         </span>
       </div>

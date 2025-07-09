@@ -21,7 +21,7 @@ export default function VocalizerTrackButton({
       <div className="relative z-10 flex w-full justify-between text-sm font-semibold text-white">
         <button
           onClick={() => setActiveVersion("original")}
-          className={`w-1/2 h-10 rounded-full transition-all cursor-pointer ${
+          className={`w-1/2 h-10 rounded-full transition-all cursor-pointer font-montserrat ${
             activeVersion === "original" ? "text-white" : "text-gray-500"
           }`}
         >
@@ -29,7 +29,7 @@ export default function VocalizerTrackButton({
         </button>
         <button
           onClick={() => setActiveVersion("vocalized")}
-          className={`w-1/2 h-10 rounded-full transition-all cursor-pointer ${
+          className={`w-1/2 h-10 rounded-full transition-all cursor-pointer font-montserrat ${
             activeVersion === "vocalized" ? "text-white" : "text-gray-500"
           }`}
         >
