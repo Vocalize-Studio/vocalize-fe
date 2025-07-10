@@ -5,13 +5,13 @@ export function PricingSection() {
     <section className="py-20 bg-white space-y-20">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-semibold text-[#252525] mb-12 font-montserrat">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-[#252525] mb-12 font-montserrat">
             Our Simple Plan, Three Ways to Pay
           </h2>
-          <p className="text-3xl text-[#252525] mb-4 font-normal font-montserrat opacity-90">
+          <p className="text-2xl md:text-3xl text-[#252525] mb-4 font-normal font-montserrat opacity-90">
             Offering unlimited vocalize and unlimited downloads
           </p>
-          <p className="text-3xl text-[#252525] max-w-5xl mx-auto text-center font-normal font-montserrat opacity-90">
+          <p className="text-2xl md:text-3xl text-[#252525] max-w-5xl mx-auto text-center font-normal font-montserrat opacity-90">
             If you are unhappy for any reason within 14 days of purchase and
             less than 4 downloads, we'll refund your money back.
           </p>
@@ -109,7 +109,7 @@ export function PricingSection() {
                 Experience AI Vocalizer for yourself
               </h2>
 
-              <p className="text-2xl lg:text-2xl mb-2 opacity-90 max-w-4xl mx-auto text-center font-normal font-montserrat leading-normal">
+              <p className="text-xl lg:text-2xl mb-2 opacity-90 max-w-4xl mx-auto text-center font-normal font-montserrat leading-normal">
                 Master and preview unlimited tracks for free and{" "}
                 <span className="font-bold">
                   only pay when you're ready to download.
@@ -119,7 +119,7 @@ export function PricingSection() {
 
               <Button
                 size="lg"
-                className="bg-white hover:bg-gray-100 px-12 py-8 font-montserrat rounded-full font-semibold text-3xl cursor-pointer mt-4 uppercase max-w-5xl mx-auto btn-custom-shadow"
+                className="bg-white hover:bg-gray-100 px-12 py-8 font-montserrat rounded-full font-semibold text-xl md:text-3xl cursor-pointer mt-4 uppercase max-w-5xl mx-auto btn-custom-shadow"
               >
                 <span className="bg-gradient-to-r from-blue-500 to-[#00025E] bg-clip-text text-transparent">
                   SIGN UP FREE
