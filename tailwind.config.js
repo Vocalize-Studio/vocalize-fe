@@ -75,6 +75,8 @@ module.exports = {
       fontFamily: {
         sans: ["Poppins", "Inter", "system-ui", "sans-serif"],
         poppins: ["Poppins", "sans-serif"],
+        monserrat: ["var(--font-montserrat)", "sans-serif"],
+        playFair: ["var(--font-playfair)", "serif"],
       },
     },
   },

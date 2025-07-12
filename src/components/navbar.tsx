@@ -10,8 +10,8 @@ import logoBlue from "../../public/vocalize-logo-blue.svg";
 const navItems = [" AI Vocalizer", "Pricing", "Blog", "Library"];
 
 export default function Navbar() {
-  const navContainerRef = useRef(null);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const navContainerRef = useRef<HTMLInputElement>(null);
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,17 +41,17 @@ export default function Navbar() {
                 <Image src={logo} alt="vocalize-logo" />
               )}
               <span
-                className={`text-xl font-bold transition-colors ${
+                className={`text-2xl font-bold transition-colors ${
                   isScrolled
-                    ? "text-[#3B82F6] shadow-[0px 3.241px 3.241px rgba(0, 0, 0, 0.25)"
-                    : "text-white"
+                    ? "text-[#3B82F6] text-shadow-custom"
+                    : "text-white text-shadow-custom"
                 }`}
               >
                 Vocalize
               </span>
             </div>
-            <div className="flex items-center justify-center max-w-3xl space-x-2">
-              <div className="hidden md:flex items-center gap-x-4">
+            <div className="flex items-center justify-center max-w-4xl space-x-1">
+              <div className="hidden md:flex items-center gap-x-2">
                 {navItems.map((item, index) => (
                   <a
                     key={index}
@@ -72,8 +72,8 @@ export default function Navbar() {
                   variant="ghost"
                   className={`${
                     isScrolled
-                      ? "bg-white text-[#3B82F6] border-2 border-[#3B82F6] hover:bg-[#3B82F6] hover:text-white p-4"
-                      : "text-white border border-white hover:bg-[#3B82F6] hover:text-white p-4"
+                      ? "font-montserrat bg-white text-[#3B82F6] border-2 border-[#3B82F6] hover:bg-[#3B82F6] hover:text-white p-4"
+                      : "font-montserrat text-white border border-white hover:bg-[#3B82F6] hover:text-white p-4"
                   } cursor-pointer`}
                 >
                   <User className="w-4 h-4 mr-2 text-inherit" />
@@ -84,8 +84,8 @@ export default function Navbar() {
                   variant="ghost"
                   className={`${
                     isScrolled
-                      ? "bg-white text-[#3B82F6] border-2 border-[#3B82F6] hover:bg-[#3B82F6] hover:text-white p-4"
-                      : "text-white border border-white hover:bg-[#3B82F6] hover:text-white p-4"
+                      ? "font-montserrat bg-white text-[#3B82F6] border-2 border-[#3B82F6] hover:bg-[#3B82F6] hover:text-white p-4"
+                      : "font-montserrat text-white border border-white hover:bg-[#3B82F6] hover:text-white p-4"
                   } cursor-pointer`}
                 >
                   Register

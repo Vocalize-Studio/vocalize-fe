@@ -12,12 +12,14 @@ export default function FeaturedCard({
   return (
     <Card className="bg-transparent border-white/75 hover:border-white border-2 text-white hover-lift hover:scale-105 group">
       <CardContent>
-        <h3 className="font-semibold mb-2 text-white">{title}</h3>
-        <p className="text-xl font-semibold text-white text-start max-w-sm break-words">
+        <h3 className="mb-2 text-white font-montserrat font-medium">{title}</h3>
+        <p className="text-xl font-semibold text-white text-start max-w-sm break-words font-montserrat">
           {content}
         </p>
         {subcontent && (
-          <p className="text-sm font-normal text-white">{subcontent}</p>
+          <p className="text-base font-normal text-white font-montserrat mt-4">
+            {subcontent}
+          </p>
         )}
       </CardContent>
     </Card>

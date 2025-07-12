@@ -56,9 +56,9 @@ export default function ProfessionalSongSection() {
         </div>
         <div className="w-full max-w-3xl mx-auto lg:py-6 xl:my-4">
           <h2 className="text-3xl md:text-5xl font-bold leading-tight mb-10 text-center lg:text-left">
-            <span className="text-professional-song">Professional Song</span>
+            <span className="text-professional-song font-montserrat">Professional Song</span>
             <br className="hidden lg:block" />
-            <span className="text-white"> in One Click</span>
+            <span className="text-white font-montserrat"> in One Click</span>
           </h2>
 
           <div className="space-y-10 text-base md:text-lg">
@@ -88,12 +88,9 @@ function FeatureStep({
 }) {
   return (
     <div className="flex items-center justify-center">
-      <div className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0 border-2 border-[#C2D8FC] text-[#C2D8FC] rounded-full flex items-center justify-center mr-4">
-        {icon}
-      </div>
       <div>
-        <p className="font-bold mb-2 text-white">{title}</p>
-        <p className="text-white/80 leading-relaxed">{description}</p>
+        <p className="font-bold mb-2 text-white font-montserrat">{title}</p>
+        <p className="text-white/80 leading-relaxed font-montserrat">{description}</p>
       </div>
     </div>
   );

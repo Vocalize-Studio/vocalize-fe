@@ -25,14 +25,14 @@ export default function AudioComparisonSection() {
     <section className="py-20 px-4 bg-gray-50 min-h-screen">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center space-y-4 mb-16">
-          <h2 className="text-4xl lg:text-5xl font-bold text-black">
+          <h2 className="text-4xl lg:text-5xl font-semibold text-black font-montserrat">
             Hear the Difference{" "}
-            <span className="text-gradient-vocalize-contrast">Vocalize</span>{" "}
+            <span className="text-gradient-vocalize-contrast font-bold">Vocalize</span>{" "}
             Makes
           </h2>
-          <p className="text-xl text-gray-600 max-w-4xl mx-auto">
+          <p className="text-xl text-black max-w-5xl mx-auto font-montserrat font-normal">
             Listen to the journey from a simple recording to a{" "}
-            <span className="text-black font-semibold">
+            <span className="text-black font-bold">
               powerful, studio-quality song
             </span>{" "}
             with just one click.
@@ -57,7 +57,7 @@ export default function AudioComparisonSection() {
           </div>
 
           <div className="text-center my-8">
-            <h3 className="text-3xl font-semibold text-[#252525]">
+            <h3 className="text-3xl font-semibold text-[#252525] font-montserrat">
               {tracks[currentTrack].title}
             </h3>
           </div>

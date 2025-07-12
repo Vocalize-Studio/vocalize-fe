@@ -122,6 +122,23 @@
 }
 
 @layer utilities {
+  
+  html {
+    scroll-behavior: smooth;
+  }
+
+  .font-montserrat {
+    font-family: var(--font-montserrat), sans-serif;
+  }
+
+  .font-playfair {
+    font-family: var(--font-playfair), serif;
+  }
+
+  .font-geist-mono {
+    font-family: var(--font-geist-mono), monospace;
+  }
+
   .bg-gradient-vocalize {
     background: linear-gradient(
       180deg,
@@ -159,15 +176,17 @@
   }
 
   .nav-hover-btn {
-    @apply relative ms-10 text-xs uppercase after:absolute after:-bottom-0.5 after:left-0 after:h-[2px] after:w-full after:origin-bottom-right after:scale-x-0 after:transition-transform after:duration-300 after:ease-[cubic-bezier(0.65_0.05_0.36_1)] hover:after:origin-bottom-left hover:after:scale-x-100 cursor-pointer;
+    @apply relative font-semibold ms-10 text-xs uppercase after:absolute after:-bottom-0.5 after:left-0 after:h-[2px] after:w-full after:origin-bottom-right after:scale-x-0 after:transition-transform after:duration-300 after:ease-[cubic-bezier(0.65_0.05_0.36_1)] hover:after:origin-bottom-left hover:after:scale-x-100 cursor-pointer;
   }
 
   .nav-hover-btn-light {
     @apply text-white after:bg-white;
+    font-family: var(--font-montserrat), sans-serif;
   }
 
   .nav-hover-btn-scrolled {
     @apply text-[#3B82F6] after:bg-[#3B82F6];
+    font-family: var(--font-montserrat), sans-serif;
   }
 
   .footer-hover-btn {
@@ -261,5 +280,12 @@
   .cta-card-shadow {
     border-radius: 40px;
     box-shadow: 0px 7px 22.3px 11px rgba(0, 0, 0, 0.25);
+  }
+
+  .btn-custom-shadow {
+    box-shadow: 0px 14px 11.3px 0px rgba(0, 0, 0, 0.25);
+  }
+  .text-shadow-custom {
+    text-shadow: 0px 3.241px 3.241px rgba(0, 0, 0, 0.25);
   }
 }
