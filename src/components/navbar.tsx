@@ -6,11 +6,12 @@ import { Menu, User, X } from "lucide-react";
 import Image from "next/image";
 import logo from "../../public/vocalize-logo.svg";
 import logoBlue from "../../public/vocalize-logo-blue.svg";
+import LoginForm from "@/features/auth/components/login-form";
+import RegisterForm from "@/features/auth/components/register-form";
 
-const navItems = [" AI Vocalizer", "Pricing", "Blog", "Library"];
+const navItems = ["AI Vocalizer", "Pricing", "Blog", "Library"];
 
 export default function Navbar() {
-  const navContainerRef = useRef<HTMLInputElement>(null);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
@@ -25,7 +26,6 @@ export default function Navbar() {
 
   return (
     <div
-      ref={navContainerRef}
       className={`fixed inset-x-0 top-4 z-50 h-16 transition-all duration-500 sm:inset-x-6 ${
         isScrolled
           ? "bg-white/70 backdrop-blur-md shadow-md rounded-xl"
@@ -69,28 +69,8 @@ export default function Navbar() {
               </div>
 
               <div className="hidden lg:flex items-center space-x-3 md:mx-16">
-                <Button
-                  variant="ghost"
-                  className={`${
-                    isScrolled
-                      ? "font-montserrat bg-white text-[#3B82F6] border-2 border-[#3B82F6] hover:bg-[#3B82F6] hover:text-white p-4"
-                      : "font-montserrat text-white border border-white hover:bg-[#3B82F6] hover:text-white p-4"
-                  } cursor-pointer`}
-                >
-                  <User className="w-4 h-4 mr-2 font-montserrat" />
-                  Login
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  className={`${
-                    isScrolled
-                      ? "font-montserrat bg-white text-[#3B82F6] border-2 border-[#3B82F6] hover:bg-[#3B82F6] hover:text-white p-4"
-                      : "font-montserrat text-white border border-white hover:bg-[#3B82F6] hover:text-white p-4"
-                  } cursor-pointer`}
-                >
-                  Register
-                </Button>
+                <LoginForm isScrolled={isScrolled} />
+                <RegisterForm isScrolled={isScrolled} />
               </div>
             </div>
             <div className="flex lg:hidden">
@@ -109,7 +89,7 @@ export default function Navbar() {
             </div>
           </div>
         </nav>
-             {isMobileMenuOpen && (
+        {isMobileMenuOpen && (
           <div
             className={`lg:hidden text-center absolute top-full left-0 w-full transition-all duration-300 ease-in-out ${
               isScrolled
