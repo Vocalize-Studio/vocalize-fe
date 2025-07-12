@@ -8,6 +8,7 @@ import logo from "../../public/vocalize-logo.svg";
 import logoBlue from "../../public/vocalize-logo-blue.svg";
 import LoginForm from "@/features/auth/components/login-form";
 import RegisterForm from "@/features/auth/components/register-form";
+import LoginDialog from "@/features/auth/components/login-dialog";
 
 const navItems = ["AI Vocalizer", "Pricing", "Blog", "Library"];
 
@@ -69,7 +70,7 @@ export default function Navbar() {
               </div>
 
               <div className="hidden lg:flex items-center space-x-3 md:mx-16">
-                <LoginForm isScrolled={isScrolled} />
+                <LoginDialog isScrolled={isScrolled} />
                 <RegisterForm isScrolled={isScrolled} />
               </div>
             </div>
