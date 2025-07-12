@@ -26,5 +26,6 @@ export function useMultiStep<T>(items: T[]) {
     goToNext: next,
     goToPrevious: prev,
     goToIndex: goTo,
+    isLastStep: index === items.length - 1,
   };
 }

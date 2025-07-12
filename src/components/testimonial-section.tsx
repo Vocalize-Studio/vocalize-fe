@@ -77,9 +77,9 @@ export function TestimonialSection() {
 
             <div
               ref={contentRef}
-              className="flex-1 text-center px-4 sm:px-8 max-w-6xl mx-auto"
+              className="flex-1 text-center px-4 sm:px-0 max-w-6xl mx-auto"
             >
-              <blockquote className="text-xl md:text-4xl text-gray-800 mb-8 leading-relaxed text-center">
+              <blockquote className="text-base md:text-2xl lg:text-4xl text-gray-800 mb-8 leading-relaxed text-center font-montserrat">
                 "{current.quote}"
               </blockquote>
 
@@ -96,10 +96,10 @@ export function TestimonialSection() {
               </div>
 
               <div>
-                <h3 className="font-bold text-gray-900 text-xl mb-1">
+                <h3 className="font-semibold text-black text-xl mb-1 font-montserrat">
                   {current.name}
                 </h3>
-                <p className="text-gray-600 text-base">{current.role}</p>
+                <p className="text-black text-base font-montserrat">{current.role}</p>
               </div>
             </div>
 

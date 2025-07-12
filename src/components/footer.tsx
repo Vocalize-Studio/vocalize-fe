@@ -38,7 +38,7 @@ export function Footer() {
   return (
     <footer className="bg-[#252525] py-12">
       <div className="container mx-auto px-6 md:max-w-xl">
-        <div className="grid md:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mb-8">
           {footerLinks.map((section) => (
             <div key={section.title}>
               <h3 className="font-semibold text-white mb-6 text-lg footer-hover-btn">
@@ -58,12 +58,11 @@ export function Footer() {
               </ul>
             </div>
           ))}
-
-          <div className="flex flex-col items-start md:items-end">
-            <div className="flex space-x-4 mb-6">
+          <div className="col-span-2 md:col-span-1 flex flex-col items-center md:items-end w-full">
+            <div className="flex space-x-4 mb-6 md:mb-8">
               {socialMedia.map(({ icon: Icon, href }, i) => (
                 <a key={i} href={href}>
-                  <Icon className="w-6 h-6 text-white hover:text-blue-200 " />
+                  <Icon className="w-6 h-6 text-white hover:text-blue-200" />
                 </a>
               ))}
             </div>
