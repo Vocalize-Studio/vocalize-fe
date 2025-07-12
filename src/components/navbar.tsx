@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { User } from "lucide-react";
+import { Menu, User, X } from "lucide-react";
 import Image from "next/image";
 import logo from "../../public/vocalize-logo.svg";
 import logoBlue from "../../public/vocalize-logo-blue.svg";
@@ -12,6 +12,7 @@ const navItems = [" AI Vocalizer", "Pricing", "Blog", "Library"];
 export default function Navbar() {
   const navContainerRef = useRef<HTMLInputElement>(null);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,7 +52,7 @@ export default function Navbar() {
               </span>
             </div>
             <div className="flex items-center justify-center max-w-4xl space-x-1">
-              <div className="hidden md:flex items-center gap-x-2">
+              <div className="hidden lg:flex items-center gap-x-2">
                 {navItems.map((item, index) => (
                   <a
                     key={index}
@@ -67,7 +68,7 @@ export default function Navbar() {
                 ))}
               </div>
 
-              <div className="flex items-center space-x-3 md:mx-16">
+              <div className="hidden lg:flex items-center space-x-3 md:mx-16">
                 <Button
                   variant="ghost"
                   className={`${
@@ -76,7 +77,7 @@ export default function Navbar() {
                       : "font-montserrat text-white border border-white hover:bg-[#3B82F6] hover:text-white p-4"
                   } cursor-pointer`}
                 >
-                  <User className="w-4 h-4 mr-2 text-inherit" />
+                  <User className="w-4 h-4 mr-2 font-montserrat" />
                   Login
                 </Button>
 
@@ -92,8 +93,71 @@ export default function Navbar() {
                 </Button>
               </div>
             </div>
+            <div className="flex lg:hidden">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className={`p-2 rounded ${
+                  isScrolled ? "text-[#3B82F6]" : "text-white"
+                }`}
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+            </div>
           </div>
         </nav>
+             {isMobileMenuOpen && (
+          <div
+            className={`lg:hidden text-center absolute top-full left-0 w-full transition-all duration-300 ease-in-out ${
+              isScrolled
+                ? "bg-white/90 backdrop-blur-md shadow-md"
+                : "bg-transparent backdrop-blur-md"
+            }`}
+          >
+            <div className="flex flex-col px-6 py-4 space-y-4">
+              {navItems.map((item, index) => (
+                <a
+                  key={index}
+                  href={`#${item.toLowerCase()}`}
+                  className={`block text-lg font-semibold ${
+                    isScrolled ? "text-[#3B82F6]" : "text-white"
+                  } hover:underline`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item}
+                </a>
+              ))}
+
+              <div className="flex flex-col gap-3 mt-4">
+                <Button
+                  variant="ghost"
+                  className={`w-full justify-center ${
+                    isScrolled
+                      ? "font-montserrat bg-white text-[#3B82F6] border-2 border-[#3B82F6] hover:bg-[#3B82F6] hover:text-white p-4"
+                      : "font-montserrat text-white border border-white hover:bg-[#3B82F6] hover:text-white p-4"
+                  }`}
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Login
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  className={`w-full justify-center ${
+                    isScrolled
+                      ? "font-montserrat bg-white text-[#3B82F6] border-2 border-[#3B82F6] hover:bg-[#3B82F6] hover:text-white p-4"
+                      : "font-montserrat text-white border border-white hover:bg-[#3B82F6] hover:text-white p-4"
+                  }`}
+                >
+                  Register
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </header>
     </div>
   );

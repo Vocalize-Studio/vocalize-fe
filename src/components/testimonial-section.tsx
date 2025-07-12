@@ -79,7 +79,7 @@ export function TestimonialSection() {
               ref={contentRef}
               className="flex-1 text-center px-4 sm:px-0 max-w-6xl mx-auto"
             >
-              <blockquote className="text-lg md:text-4xl text-gray-800 mb-8 leading-relaxed text-center font-montserrat">
+              <blockquote className="text-base md:text-2xl lg:text-4xl text-gray-800 mb-8 leading-relaxed text-center font-montserrat">
                 "{current.quote}"
               </blockquote>
 

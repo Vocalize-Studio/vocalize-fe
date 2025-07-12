@@ -84,7 +84,7 @@ export default function VocalizerForm() {
                 simulateUpload(file);
               }
             }}
-            className="bg-transparent border-3 border-dashed border-white rounded-xl p-6 transition-colors max-w-lg w-full hover-lift"
+            className="bg-transparent border-3 border-dashed border-white rounded-xl p-6 transition-colors max-w-lg w-full hover-lift mx-auto lg:mx-0 mt-4"
           >
             <input
               type="file"
@@ -197,8 +197,12 @@ export default function VocalizerForm() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-6 text-white max-w-xl mx-6 ">
-                    <span className="text-base font-semibold font-montserrat">Drag & Drop</span>
-                    <span className="text-base text-white font-semibold font-montserrat">or</span>
+                    <span className="text-base font-semibold font-montserrat">
+                      Drag & Drop
+                    </span>
+                    <span className="text-base text-white font-semibold font-montserrat">
+                      or
+                    </span>
                     <Button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
@@ -218,11 +222,11 @@ export default function VocalizerForm() {
               name="instrumental"
               render={({ field: { onChange, value, ref } }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-semibold text-lg font-montserrat">
+                  <FormLabel className="text-white font-semibold text-lg font-montserrat mx-auto lg:mx-0">
                     Instrumental Track
                   </FormLabel>
                   <FormControl>
-                    <div className="relative flex items-center max-w-lg w-full">
+                    <div className="relative flex items-center max-w-lg w-full mx-auto lg:mx-0">
                       <input
                         type="file"
                         accept=".mp3,.wav,.mp4"
@@ -293,11 +297,11 @@ export default function VocalizerForm() {
               name="reference"
               render={({ field: { onChange, value, ref } }) => (
                 <FormItem>
-                  <FormLabel className="text-white font-semibold text-lg font-montserrat">
+                  <FormLabel className="text-white font-semibold text-lg font-montserrat mx-auto lg:mx-0">
                     Reference Track
                   </FormLabel>
                   <FormControl>
-                    <div className="relative flex items-center max-w-lg w-full">
+                    <div className="relative flex items-center max-w-lg w-full mx-auto lg:mx-0">
                       <input
                         type="file"
                         accept=".mp3,.wav,.mp4"
@@ -360,14 +364,16 @@ export default function VocalizerForm() {
             />
           </div>
 
-          <Button className="group w-full bg-white hover:bg-blue-50 font-semibold px-4 py-5 text-lg mt-6 max-w-lg relative hover-lift cursor-pointer border-[#c2d8fc] border-2">
-            <span className="button-vocalize relative btn-glow font-montserrat">
-              Vocalize
-              <span className="inline-block text-sm align-super translate-y-[-0.05em] opacity-0 group-hover:opacity-100 transition duration-400 hover:from-blue-200 hover:to-blue-400">
-                ✨
+          <div className="w-full flex justify-center lg:justify-start">
+            <Button className="group w-full bg-white hover:bg-blue-50 font-semibold px-4 py-5 text-lg mt-6 max-w-lg relative hover-lift cursor-pointer border-[#c2d8fc] border-2">
+              <span className="button-vocalize relative btn-glow font-montserrat">
+                Vocalize
+                <span className="inline-block text-sm align-super translate-y-[-0.05em] opacity-0 group-hover:opacity-100 transition duration-400 hover:from-blue-200 hover:to-blue-400">
+                  ✨
+                </span>
               </span>
-            </span>
-          </Button>
+            </Button>
+          </div>
         </form>
       </Form>
     </div>

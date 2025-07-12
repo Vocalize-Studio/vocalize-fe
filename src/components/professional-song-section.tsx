@@ -43,20 +43,24 @@ const FeatureList = [
 
 export default function ProfessionalSongSection() {
   return (
-    <section className="bg-[#252525] text-white w-full py-12 lg:py-0">
-      <div className="mx-auto px-6 lg:px-0 grid lg:grid-cols-2 items-center">
-        <div className="hidden lg:flex w-full h-auto items-center justify-center relative aspect-square">
-          <Image
-            src={ProfessionalSongImage}
-            alt="Singer holding mic"
-            fill
-            className="object-cover rounded-xl"
-            priority
-          />
-        </div>
-        <div className="w-full max-w-3xl mx-auto lg:py-6 xl:my-4">
+    <section className="relative bg-[#252525] text-white w-full py-12 lg:min-h-screen overflow-hidden">
+      <div className="hidden lg:flex absolute left-0 top-0 h-full w-1/2 z-0 items-center justify-center">
+        <Image
+          src={ProfessionalSongImage}
+          alt="Singer holding mic"
+          fill
+          className="object-cover"
+          priority
+        />
+      </div>
+
+      <div className="relative z-10 grid lg:grid-cols-2 items-center lg:h-full">
+        <div className="hidden lg:block" />
+        <div className="w-full max-w-3xl px-6 py-12 lg:px-16 mx-auto">
           <h2 className="text-3xl md:text-5xl font-bold leading-tight mb-10 text-center lg:text-left">
-            <span className="text-professional-song font-montserrat">Professional Song</span>
+            <span className="text-professional-song font-montserrat">
+              Professional Song
+            </span>
             <br className="hidden lg:block" />
             <span className="text-white font-montserrat"> in One Click</span>
           </h2>
@@ -87,10 +91,15 @@ function FeatureStep({
   description: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-center">
-      <div>
+    <div className="flex items-start">
+      <div className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0 border-2 border-[#C2D8FC] text-[#C2D8FC] rounded-full flex items-center justify-center mr-4">
+        {icon}
+      </div>
+      <div className="flex flex-col">
         <p className="font-bold mb-2 text-white font-montserrat">{title}</p>
-        <p className="text-white/80 leading-relaxed font-montserrat">{description}</p>
+        <p className="text-white/80 leading-relaxed font-medium font-montserrat">
+          {description}
+        </p>
       </div>
     </div>
   );
