@@ -4,7 +4,7 @@ import { tracks } from "@/features/vocalizer/constants/vocalizer";
 
 export function useAudioComparison() {
   const [activeVersion, setActiveVersion] = useState<"original" | "vocalized">(
-    "vocalized"
+    "original"
   );
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [api, setApi] = useState<CarouselApi | null>(null);
