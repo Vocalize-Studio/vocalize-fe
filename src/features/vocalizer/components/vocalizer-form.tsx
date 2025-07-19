@@ -10,11 +10,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { vocalizerSchema } from "../schema/vocalizer";
 import { useForm } from "react-hook-form";
+import { VocalizedPreviewComparison } from "./vocalizer-preview-comparison";
+import PreprocessingUpload from "./preprocessing-upload";
 
 export default function VocalizerForm() {
   const form = useForm<z.infer<typeof vocalizerSchema>>({
@@ -25,13 +27,17 @@ export default function VocalizerForm() {
     },
   });
   const dragAndDropRef = useRef<HTMLInputElement>(null);
+  const ref = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const referenceRef = useRef<HTMLInputElement>(null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-  const instrumentalFile = form.watch("instrumental");
+  const [isUploading, setIsUploading] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   function simulateUpload(file: File) {
     setUploadProgress(0);
+    setUploadedFile(file);
 
     const interval = setInterval(() => {
       setUploadProgress((prev) => {
@@ -45,21 +51,22 @@ export default function VocalizerForm() {
     }, 100);
   }
 
-  useEffect(() => {
-    if (instrumentalFile instanceof File) {
-      simulateUpload(instrumentalFile);
-    }
-  }, [instrumentalFile]);
-
   function cancelUpload() {
+    setUploadedFile(null);
     setUploadProgress(null);
-    form.resetField("instrumental");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+    if (ref.current) {
+      ref.current.value = "";
     }
   }
 
-  function onSubmit(values: z.infer<typeof vocalizerSchema>) {}
+  async function onSubmit(values: z.infer<typeof vocalizerSchema>) {
+    const isValid = await form.trigger();
+
+    if (isValid) {
+      setIsUploading(true);
+      form.reset();
+    }
+  }
 
   return (
     <div className="space-y-4 mt-4">
@@ -76,10 +83,6 @@ export default function VocalizerForm() {
               e.stopPropagation();
               const file = e.dataTransfer.files?.[0];
               if (file) {
-                form.setValue("instrumental", file, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                });
                 simulateUpload(file);
               }
             }}
@@ -92,17 +95,13 @@ export default function VocalizerForm() {
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) {
-                  form.setValue("instrumental", file, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  });
                   simulateUpload(file);
                 }
               }}
             />
 
-            <div ref={dragAndDropRef} className="relative w-full">
-              {instrumentalFile instanceof File && uploadProgress !== null ? (
+            <div className="relative w-full">
+              {uploadProgress !== null ? (
                 <div className="flex items-center justify-between w-full text-white p-4 rounded-xl">
                   <div className="flex items-center gap-3 max-w-xs">
                     {uploadProgress < 100 ? (
@@ -143,7 +142,7 @@ export default function VocalizerForm() {
                     <div className="font-semibold text-lg">
                       {uploadProgress < 100
                         ? "Uploading..."
-                        : `${instrumentalFile.name}`}
+                        : uploadedFile?.name || "File uploaded"}
                     </div>
                   </div>
 
@@ -160,7 +159,7 @@ export default function VocalizerForm() {
                       <span className="text-lg text-white">or</span>
                       <Button
                         type="button"
-                        onClick={() => fileInputRef.current?.click()}
+                        onClick={() => ref.current?.click()}
                         className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 cursor-pointer"
                       >
                         Browse
@@ -204,7 +203,7 @@ export default function VocalizerForm() {
                     </span>
                     <Button
                       type="button"
-                      onClick={() => fileInputRef.current?.click()}
+                      onClick={() => ref.current?.click()}
                       className="bg-[#3B82F6] border-none text-white hover:bg-blue-700 hover:text-white cursor-pointer font-montserrat font-normal text-lg"
                     >
                       Browse
@@ -267,12 +266,12 @@ export default function VocalizerForm() {
 
                       <Input
                         type="text"
-                        readOnly
-                        // value={
-                        //   typeof value === "string" ? value : value?.name || ""
-                        // }
+                        value={
+                          typeof value === "string" ? value : value?.name || ""
+                        }
+                        onChange={(e) => onChange(e.target.value)}
                         placeholder="Paste the Link here"
-                        className="pl-12 pr-28 bg-white border-white/50 text-white placeholder:text-[#585858]/50 input-glow"
+                        className="pl-12 pr-28 bg-white border-white/50 text-gray-500 placeholder:text-[#585858]/50 input-glow"
                       />
 
                       <Button
@@ -340,12 +339,12 @@ export default function VocalizerForm() {
 
                       <Input
                         type="text"
-                        readOnly
-                        // value={
-                        //   typeof value === "string" ? value : value?.name || ""
-                        // }
+                        value={
+                          typeof value === "string" ? value : value?.name || ""
+                        }
+                        onChange={(e) => onChange(e.target.value)}
                         placeholder="Paste the Link here"
-                        className="pl-12 pr-28 bg-white border-white/50 text-white placeholder:text-[#585858]/50 input-glow"
+                        className="pl-12 pr-28 bg-white border-white/50 text-gray-500 placeholder:text-[#585858]/50 input-glow"
                       />
 
                       <Button
@@ -364,7 +363,10 @@ export default function VocalizerForm() {
           </div>
 
           <div className="w-full flex justify-center lg:justify-start">
-            <Button className="group w-full bg-white hover:bg-blue-50 font-semibold px-4 py-5 text-lg mt-6 max-w-lg relative hover-lift cursor-pointer border-[#c2d8fc] border-2">
+            <Button
+              type="submit"
+              className="group w-full bg-white hover:bg-blue-50 font-semibold px-4 py-5 text-lg mt-6 max-w-lg relative hover-lift cursor-pointer border-[#c2d8fc] border-2"
+            >
               <span className="button-vocalize relative btn-glow font-montserrat">
                 Vocalize
                 <span className="inline-block text-sm align-super translate-y-[-0.05em] opacity-0 group-hover:opacity-100 transition duration-400 hover:from-blue-200 hover:to-blue-400">
@@ -375,6 +377,26 @@ export default function VocalizerForm() {
           </div>
         </form>
       </Form>
+
+      <PreprocessingUpload
+        open={isUploading}
+        onOpenChange={(open) => {
+          setIsUploading(open);
+        }}
+        onCompleted={() => {
+          setIsUploading(false);
+          setShowPreview(true);
+        }}
+        fileName={uploadedFile?.name}
+      />
+
+      {showPreview && (
+        <VocalizedPreviewComparison
+          isVisible={showPreview}
+          onClose={() => setShowPreview(false)}
+          uploadedFile={uploadedFile}
+        />
+      )}
     </div>
   );
 }

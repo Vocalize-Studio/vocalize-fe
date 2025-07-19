@@ -4,7 +4,11 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import goalLogo from "../../../../public/goal.svg";
 
-export default function StepDoneForm() {
+export default function StepDoneForm({
+  onBackToLogin,
+}: {
+  onBackToLogin: () => void;
+}) {
   return (
     <div className="space-y-4">
       <DialogHeader className="mt-10">
@@ -29,7 +33,10 @@ export default function StepDoneForm() {
         </DialogClose>
       </div>
 
-      <p className="text-[#3B82F6] text-sm text-center cursor-pointer font-montserrat font-normal mt-8">
+      <p
+        onClick={onBackToLogin}
+        className="text-[#3B82F6] text-sm text-center cursor-pointer font-montserrat font-normal mt-8"
+      >
         Return to Log In
       </p>
       <p className="text-[#f4f4f4] text-sm text-center cursor-pointer">

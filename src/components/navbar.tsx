@@ -6,7 +6,6 @@ import { Menu, User, X } from "lucide-react";
 import Image from "next/image";
 import logo from "../../public/vocalize-logo.svg";
 import logoBlue from "../../public/vocalize-logo-blue.svg";
-import LoginForm from "@/features/auth/components/login-form";
 import RegisterForm from "@/features/auth/components/register-form";
 import LoginDialog from "@/features/auth/components/login-dialog";
 
@@ -113,28 +112,8 @@ export default function Navbar() {
               ))}
 
               <div className="flex flex-col gap-3 mt-4">
-                <Button
-                  variant="ghost"
-                  className={`w-full justify-center ${
-                    isScrolled
-                      ? "font-montserrat bg-white text-[#3B82F6] border-2 border-[#3B82F6] hover:bg-[#3B82F6] hover:text-white p-4"
-                      : "font-montserrat text-white border border-white hover:bg-[#3B82F6] hover:text-white p-4"
-                  }`}
-                >
-                  <User className="w-4 h-4 mr-2" />
-                  Login
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  className={`w-full justify-center ${
-                    isScrolled
-                      ? "font-montserrat bg-white text-[#3B82F6] border-2 border-[#3B82F6] hover:bg-[#3B82F6] hover:text-white p-4"
-                      : "font-montserrat text-white border border-white hover:bg-[#3B82F6] hover:text-white p-4"
-                  }`}
-                >
-                  Register
-                </Button>
+                <LoginDialog isScrolled={isScrolled} />
+                <RegisterForm isScrolled={isScrolled} />
               </div>
             </div>
           </div>

@@ -12,7 +12,13 @@ import {
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-export default function StepEmailForm({ next }: { next: () => void }) {
+export default function StepEmailForm({
+  next,
+  onBackToLogin,
+}: {
+  next: () => void;
+  onBackToLogin: () => void;
+}) {
   const { control, handleSubmit } = useFormContext();
 
   const onSubmit = (data: any) => {
@@ -85,7 +91,10 @@ export default function StepEmailForm({ next }: { next: () => void }) {
         </Button>
       </div>
 
-      <p className="text-[#3B82F6] text-sm text-center cursor-pointer font-montserrat font-normal mt-10">
+      <p
+        onClick={onBackToLogin}
+        className="text-[#3B82F6] text-sm text-center cursor-pointer font-montserrat font-normal mt-10"
+      >
         Return to Log In
       </p>
       <p className="text-[#f4f4f4] text-sm text-center cursor-pointer">
