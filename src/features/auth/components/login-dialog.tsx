@@ -29,7 +29,7 @@ export default function LoginDialog({ isScrolled }: LoginDialogProps) {
               : "font-montserrat text-white border border-white hover:bg-[#3B82F6] hover:text-white p-4"
           } cursor-pointer`}
         >
-          <User className="mr-1.5 h-4 w-4" />
+          <User className="h-4 w-4" />
           Login
         </Button>
       </DialogTrigger>

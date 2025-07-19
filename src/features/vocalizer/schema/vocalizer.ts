@@ -16,14 +16,14 @@ const fileOrUrlSchema = z.union([
 ]);
 
 export const vocalizerSchema = z.object({
-  file: z
-    .instanceof(File)
-    .refine((file) => ACCEPTED_MIME_TYPES.includes(file.type), {
-      message: "File must be MP3 or MP4",
-    })
-    .refine((file) => file.size <= MAX_FILE_SIZE, {
-      message: "File size must be 50MB or less",
-    }),
+  // file: z
+  //   .instanceof(File)
+  //   .refine((file) => ACCEPTED_MIME_TYPES.includes(file.type), {
+  //     message: "File must be MP3 or MP4",
+  //   })
+  //   .refine((file) => file.size <= MAX_FILE_SIZE, {
+  //     message: "File size must be 50MB or less",
+  //   }),
   instrumental: fileOrUrlSchema,
   reference: fileOrUrlSchema,
 });

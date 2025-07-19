@@ -9,6 +9,9 @@ import StepNewPasswordForm from "./new-password-form";
 import StepCodeForm from "./step-code-form";
 import StepDoneForm from "./step-done-form";
 import { useStepper } from "../hooks/use-stepper";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+import { useRef } from "react";
 
 interface ForgotPasswordContentProps {
   onBackToLogin: () => void;
@@ -23,20 +26,38 @@ export default function ForgotPasswordForm({
     mode: "onTouched",
   });
 
+  const stepRef = useRef(null);
+
   const { currentIndex, goToNext } = useStepper(4);
 
-  console.log("Current Index:", currentIndex);
-
   const steps = [
-    <StepEmailForm key="email" next={goToNext} />,
-    <StepCodeForm key="code" next={goToNext} />,
-    <StepNewPasswordForm key="new" next={goToNext} />,
-    <StepDoneForm key="done" />,
+    <StepEmailForm key="email" next={goToNext} onBackToLogin={onBackToLogin} />,
+    <StepCodeForm key="code" next={goToNext} onBackToLogin={onBackToLogin} />,
+    <StepNewPasswordForm key="new" next={goToNext} onBackToLogin={onBackToLogin} />,
+    <StepDoneForm key="done" onBackToLogin={onBackToLogin} />,
   ];
+
+  useGSAP(
+    () => {
+      gsap.fromTo(
+        stepRef.current,
+        { x: 100, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.4,
+          ease: "power2.out",
+        }
+      );
+    },
+    { dependencies: [currentIndex], scope: stepRef }
+  );
 
   return (
     <FormProvider {...methods}>
-      <div className="space-y-4">{steps[currentIndex]}</div>
+      <div ref={stepRef} className="space-y-4">
+        {steps[currentIndex]}
+      </div>
       <StepIndicator total={steps.length} current={currentIndex} />
     </FormProvider>
   );
