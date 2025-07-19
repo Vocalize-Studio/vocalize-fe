@@ -11,7 +11,13 @@ import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 
-export default function StepCodeForm({ next }: { next: () => void }) {
+export default function StepCodeForm({
+  next,
+  onBackToLogin,
+}: {
+  next: () => void;
+  onBackToLogin: () => void;
+}) {
   const { control, handleSubmit, setValue, getValues } = useFormContext();
 
   const onSubmit = () => {
@@ -28,7 +34,7 @@ export default function StepCodeForm({ next }: { next: () => void }) {
   ) => {
     const value = e.target.value;
 
-    if (!/^[0-9]?$/.test(value)) return; 
+    if (!/^[0-9]?$/.test(value)) return;
     const currentOtp = getValues("otp").split("");
     currentOtp[index] = value;
     const newOtp = currentOtp.join("");
@@ -124,7 +130,10 @@ export default function StepCodeForm({ next }: { next: () => void }) {
         </Button>
       </div>
 
-      <p className="text-[#3B82F6] text-sm text-center cursor-pointer font-montserrat font-normal mt-10">
+      <p
+        onClick={onBackToLogin}
+        className="text-[#3B82F6] text-sm text-center cursor-pointer font-montserrat font-normal mt-10"
+      >
         Return to Log In
       </p>
       <p className="text-[#f4f4f4] text-sm text-center cursor-pointer">

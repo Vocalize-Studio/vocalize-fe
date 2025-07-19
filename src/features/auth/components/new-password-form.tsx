@@ -13,7 +13,13 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function StepNewPasswordForm({ next }: { next: () => void }) {
+export default function StepNewPasswordForm({
+  next,
+  onBackToLogin,
+}: {
+  next: () => void;
+  onBackToLogin: () => void;
+}) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
@@ -113,7 +119,7 @@ export default function StepNewPasswordForm({ next }: { next: () => void }) {
                 ) : (
                   <Eye className="h-4 w-4" />
                 )}
-                <span>{showPassword ? "Hide" : "Show"}</span>
+                <span>{showConfirmPassword ? "Hide" : "Show"}</span>
               </button>
             </div>
             <FormControl>
@@ -137,7 +143,10 @@ export default function StepNewPasswordForm({ next }: { next: () => void }) {
         </Button>
       </div>
 
-      <p className="text-[#3B82F6] text-sm text-center cursor-pointer font-montserrat font-normal mt-10">
+      <p
+        onClick={onBackToLogin}
+        className="text-[#3B82F6] text-sm text-center cursor-pointer font-montserrat font-normal mt-10"
+      >
         Return to Log In
       </p>
       <p className="text-[#f4f4f4] text-sm text-center cursor-pointer">
