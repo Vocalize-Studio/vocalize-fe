@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import googleIcon from "../../../../public/google-icon.svg";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react"; // gunakan Loader2 sebagai spinner
 import {
   Form,
   FormField,
@@ -33,7 +33,9 @@ interface RegisterFormProps {
 }
 
 export default function RegisterForm({ isScrolled }: RegisterFormProps) {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -44,12 +46,19 @@ export default function RegisterForm({ isScrolled }: RegisterFormProps) {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof registerSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof registerSchema>) => {
+    setIsLoading(true);
+    console.log("Submitting:", values);
+
+    setTimeout(() => {
+      setIsLoading(false);
+      setIsDialogOpen(false);
+      form.reset();
+    }, 2000);
   };
 
   return (
-    <Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <div className="w-full">
         <DialogTrigger asChild>
           <Button
@@ -108,7 +117,7 @@ export default function RegisterForm({ isScrolled }: RegisterFormProps) {
                       {...field}
                       type="text"
                       placeholder="Enter your name here"
-                      className="bg-[#333] border-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] text-[#f4f4f4] placeholder:text-[#929292] text-sm rounded-xs"
+                      className="bg-[#333] border-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] text-[#f4f4f4] placeholder:text-[#929292] text-sm"
                     />
                   </FormControl>
                   <FormMessage />
@@ -129,7 +138,7 @@ export default function RegisterForm({ isScrolled }: RegisterFormProps) {
                       {...field}
                       type="email"
                       placeholder="yourname@gmail.com"
-                      className="bg-[#333] border-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] text-[#f4f4f4] placeholder:text-[#929292] text-sm rounded-xs"
+                      className="bg-[#333] border-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] text-[#f4f4f4] placeholder:text-[#929292] text-sm"
                     />
                   </FormControl>
                   <FormMessage />
@@ -164,7 +173,7 @@ export default function RegisterForm({ isScrolled }: RegisterFormProps) {
                       {...field}
                       type={showPassword ? "text" : "password"}
                       placeholder="*********"
-                      className="bg-[#333] border-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] text-[#f4f4f4] placeholder:text-[#929292] text-sm rounded-xs"
+                      className="bg-[#333] border-none focus-visible:ring-2 focus-visible:ring-[#3B82F6] text-[#f4f4f4] placeholder:text-[#929292] text-sm"
                     />
                   </FormControl>
                   <FormMessage />
@@ -182,9 +191,13 @@ export default function RegisterForm({ isScrolled }: RegisterFormProps) {
             <DialogFooter className="mt-2">
               <Button
                 type="submit"
-                className="w-full h-12 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#1B3A6F] hover:opacity-80 text-[#f4f4f4] font-montserrat font-bold text-sm tracking-wide"
+                disabled={isLoading}
+                className="w-full h-12 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#1B3A6F] hover:opacity-80 text-[#f4f4f4] font-montserrat font-bold text-sm tracking-wide flex items-center justify-center"
               >
-                CREATE MY FREE ACCOUNT
+                {isLoading ? (
+                  <Loader2 className="animate-spin w-5 h-5 mr-2" />
+                ) : null}
+                {isLoading ? "Processing..." : "CREATE MY FREE ACCOUNT"}
               </Button>
             </DialogFooter>
           </form>

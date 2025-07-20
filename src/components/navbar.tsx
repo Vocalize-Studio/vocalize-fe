@@ -97,7 +97,7 @@ export default function Navbar() {
                 : "bg-transparent backdrop-blur-md"
             }`}
           >
-            <div className="flex flex-col px-6 py-4 space-y-4">
+            <div className="flex flex-col px-6 py-4 space-y-4 mx-auto">
               {navItems.map((item, index) => (
                 <a
                   key={index}
