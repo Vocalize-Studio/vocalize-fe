@@ -13,10 +13,13 @@ interface LoginDialogProps {
 
 export default function LoginDialog({ isScrolled }: LoginDialogProps) {
   const [mode, setMode] = useState<"login" | "forgot">("login");
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Dialog
+      open={isOpen}
       onOpenChange={(open) => {
+        setIsOpen(open);
         if (open) setMode("login");
       }}
     >
@@ -36,7 +39,10 @@ export default function LoginDialog({ isScrolled }: LoginDialogProps) {
 
       <DialogContent className="sm:max-w-[425px] h-auto bg-[#252525] border-none p-8 rounded-2xl">
         {mode === "login" ? (
-          <LoginForm onForgot={() => setMode("forgot")} />
+          <LoginForm
+            onForgot={() => setMode("forgot")}
+            onClose={() => setIsOpen(false)}
+          />
         ) : (
           <ForgotPasswordForm onBackToLogin={() => setMode("login")} />
         )}
