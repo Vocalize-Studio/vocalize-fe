@@ -24,6 +24,8 @@ export default function StepCodeForm({
     next();
   };
 
+  const email = getValues("email");
+
   const inputRefs = Array.from({ length: 6 }, () =>
     useRef<HTMLInputElement>(null)
   );
@@ -95,7 +97,7 @@ export default function StepCodeForm({
         </DialogTitle>
       </DialogHeader>
       <p className="text-sm text-[#f4f4f4] text-center mb-6">
-        we sent a code to richardcen05@gmail.com
+        we sent a code to <span className="font-semibold">{email}</span>
       </p>
 
       <FormField

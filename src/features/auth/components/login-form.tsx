@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import googleIcon from "../../../../public/google-icon.svg";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -27,17 +27,27 @@ import { z } from "zod";
 
 interface LoginFormProps {
   onForgot: () => void;
+  onClose: () => void;
 }
 
-export default function LoginForm({ onForgot }: LoginFormProps) {
+export default function LoginForm({ onForgot, onClose }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
-  })
-  const onSubmit = (values: z.infer<typeof loginSchema>) => {
+  });
+
+  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    setIsLoading(true);
     console.log(values);
+
+    setTimeout(() => {
+      setIsLoading(false);
+      onClose();
+      form.reset();
+    }, 2000);
   };
 
   return (
@@ -48,8 +58,10 @@ export default function LoginForm({ onForgot }: LoginFormProps) {
             Welcome Back!
           </DialogTitle>
           <DialogDescription className="text-center text-[#f4f4f4] font-montserrat text-sm mt-1">
-            Don’t have an account yet? {" "}
-            <span className="text-[#3B82F6] font-bold cursor-pointer">Sign Up Free</span>
+            Don’t have an account yet?{" "}
+            <span className="text-[#3B82F6] font-bold cursor-pointer">
+              Sign Up Free
+            </span>
           </DialogDescription>
         </DialogHeader>
 
@@ -64,14 +76,18 @@ export default function LoginForm({ onForgot }: LoginFormProps) {
           </span>
         </Button>
 
-        <p className="text-center text-[#929292] font-montserrat text-xs">or continue with</p>
+        <p className="text-center text-[#929292] font-montserrat text-xs">
+          or continue with
+        </p>
 
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[#929292] text-xs">Email Address</FormLabel>
+              <FormLabel className="text-[#929292] text-xs">
+                Email Address
+              </FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -98,7 +114,11 @@ export default function LoginForm({ onForgot }: LoginFormProps) {
                   onClick={() => setShowPassword(!showPassword)}
                   className="flex items-center gap-1 text-[#929292] hover:text-[#f4f4f4] text-xs"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                   <span>{showPassword ? "Hide" : "Show"}</span>
                 </button>
               </div>
@@ -125,9 +145,13 @@ export default function LoginForm({ onForgot }: LoginFormProps) {
         <DialogFooter className="mt-2">
           <Button
             type="submit"
+            disabled={isLoading}
             className="w-full h-12 uppercase rounded-full bg-gradient-to-r from-[#3B82F6] to-[#1B3A6F] hover:opacity-80 text-[#f4f4f4] font-montserrat font-bold text-sm tracking-wide"
           >
-            log in to my account
+            {isLoading ? (
+              <Loader2 className="animate-spin w-5 h-5 mr-2" />
+            ) : null}
+            {isLoading ? "Processing..." : "LOG IN TO MY ACCOUNT"}
           </Button>
         </DialogFooter>
       </form>

@@ -90,6 +90,7 @@ export default function VocalizerForm() {
           >
             <input
               type="file"
+              accept=".mp3,.mp4,.wav"
               ref={dragAndDropRef}
               className="hidden"
               onChange={(e) => {
@@ -189,13 +190,13 @@ export default function VocalizerForm() {
                         strokeLinecap="round"
                       />
                     </svg>
-                    <p className="text-white text-sm md:text-base font-semibold font-montserrat">
+                    <p className="text-white text-sm md:text-base text-center font-semibold font-montserrat">
                       Your Voice
                     </p>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-6 text-white max-w-xl mx-6 ">
-                    <span className="text-base font-semibold font-montserrat">
+                  <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-8 text-white max-w-2xl mx-auto">
+                    <span className="text-base font-semibold font-montserrat text-center">
                       Drag & Drop
                     </span>
                     <span className="text-base text-white font-semibold font-montserrat">
