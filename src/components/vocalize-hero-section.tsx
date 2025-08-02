@@ -32,7 +32,7 @@ export default function VocalizeHeroSection() {
               </span>
             </h1>
 
-            <p className="text-2xl max-w-md md:max-w-lg text-center text-white leading-relaxed font-montserrat">
+            <p className="px-4 sm:px-0 text-2xl max-w-md md:max-w-lg text-center text-white leading-relaxed font-montserrat">
               Get instant AI mixing & mastering for your dream vocals.{" "}
               <span className="font-bold text-white">
                 Fast. Easy. Flawless.
@@ -41,7 +41,7 @@ export default function VocalizeHeroSection() {
           </div>
           <div className="space-y-6">
             <div className="text-white text-center mb-5">
-              <p className="text-xl lg:text-2xl max-w-xl lg:max-w-xl text-center lg:text-start font-normal font-montserrat mx-auto lg:mx-0">
+              <p className="px-1 sm:px-0 text-base md:text-lg lg:text-2xl max-w-lg lg:max-w-xl text-center lg:text-start font-normal font-montserrat mx-auto lg:mx-0">
                 Upload your tracks and let our AI create a{" "}
                 <span className="text-white/90 font-bold">
                   professional, studio-quality song for you.
@@ -59,7 +59,7 @@ export default function VocalizeHeroSection() {
 
 export const VocalizerFeatureList = () => {
   return (
-    <div className="grid md:grid-cols-3 gap-6 mt-16 max-w-[95rem] py-4 md:p-16 mx-auto">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-16 max-w-[95rem] py-4 md:p-16 mx-auto">
       {vocalizerFeatures.map((feature) => (
         <FeaturedCard
           key={feature.title}

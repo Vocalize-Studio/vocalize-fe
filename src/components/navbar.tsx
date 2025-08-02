@@ -8,12 +8,21 @@ import logo from "../../public/vocalize-logo.svg";
 import logoBlue from "../../public/vocalize-logo-blue.svg";
 import RegisterForm from "@/features/auth/components/register-form";
 import LoginDialog from "@/features/auth/components/login-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 const navItems = ["AI Vocalizer", "Pricing", "Blog", "Library"];
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,7 +42,7 @@ export default function Navbar() {
       }`}
     >
       <header className="absolute top-1/2 w-full -translate-y-1/2">
-        <nav className="relative z-10 px-6 sm:px-16 nd:px-10 py-4">
+        <nav className="relative z-10 px-6 sm:px-16 md:px-10 py-4">
           <div className="mx-auto flex items-center justify-between">
             <div className="flex items-center">
               {isScrolled ? (
@@ -69,8 +78,38 @@ export default function Navbar() {
               </div>
 
               <div className="hidden lg:flex items-center space-x-3 md:mx-16">
-                <LoginDialog isScrolled={isScrolled} />
-                <RegisterForm isScrolled={isScrolled} />
+                {isLoggedIn ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className={`font-semibold font-montserrat text-base ${
+                          isScrolled ? "text-[#3B82F6]" : "text-white"
+                        }`}
+                      >
+                        abc ▾
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-40">
+                      <DropdownMenuLabel>abc</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>Account</DropdownMenuItem>
+                      <DropdownMenuItem>My Plan</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => {}}
+                        className="text-red-500 focus:text-red-500"
+                      >
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <>
+                    <LoginDialog isScrolled={isScrolled} />
+                    <RegisterForm isScrolled={isScrolled} />
+                  </>
+                )}
               </div>
             </div>
             <div className="flex lg:hidden">

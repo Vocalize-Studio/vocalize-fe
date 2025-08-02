@@ -70,7 +70,7 @@ export function TestimonialSection() {
               variant="ghost"
               size="icon"
               onClick={goToPrevious}
-              className="text-gray-800 hover:bg-gray-200 w-20 h-20 rounded-full cursor-pointer"
+              className="text-gray-800 hover:bg-gray-200 w-auto h-auto md:w-20 md:h-20 rounded-full cursor-pointer"
             >
               <ChevronLeft className="w-12 h-12" strokeWidth={5} />
             </Button>
@@ -99,7 +99,9 @@ export function TestimonialSection() {
                 <h3 className="font-semibold text-black text-xl mb-1 font-montserrat">
                   {current.name}
                 </h3>
-                <p className="text-black text-base font-montserrat">{current.role}</p>
+                <p className="text-black text-base font-montserrat">
+                  {current.role}
+                </p>
               </div>
             </div>
 
@@ -107,7 +109,7 @@ export function TestimonialSection() {
               variant="ghost"
               size="icon"
               onClick={goToNext}
-              className="text-gray-800 hover:bg-gray-200 w-20 h-20 rounded-full cursor-pointer"
+              className="text-gray-800 hover:bg-gray-200 w-auto h-auto md:w-20 md:h-20 rounded-full cursor-pointer"
             >
               <ChevronRight className="w-16 h-16" strokeWidth={5} />
             </Button>

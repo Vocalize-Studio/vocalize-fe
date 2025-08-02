@@ -69,7 +69,7 @@ export default function VocalizerForm() {
   }
 
   return (
-    <div className="space-y-4 mt-4">
+    <div className="space-y-4 mt-4 px-4 sm:px-0">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div
@@ -86,7 +86,7 @@ export default function VocalizerForm() {
                 simulateUpload(file);
               }
             }}
-            className="bg-transparent border-3 border-dashed border-white rounded-xl p-6 transition-colors max-w-lg w-full hover-lift mx-auto lg:mx-0 mt-4"
+            className="bg-transparent border-3 border-dashed border-white rounded-xl p-6 transition-colors max-w-xl w-full hover-lift mx-auto lg:mx-0 mt-4"
           >
             <input
               type="file"
@@ -104,7 +104,7 @@ export default function VocalizerForm() {
             <div className="relative w-full">
               {uploadProgress !== null ? (
                 <div className="flex items-center justify-between w-full text-white p-4 rounded-xl">
-                  <div className="flex items-center gap-3 max-w-xs">
+                  <div className="flex items-center gap-3 max-w-sm">
                     {uploadProgress < 100 ? (
                       <div className="relative w-16 h-16">
                         <svg
@@ -126,21 +126,22 @@ export default function VocalizerForm() {
                         </div>
                       </div>
                     ) : (
-                      <svg
-                        width="66"
-                        height="54"
-                        viewBox="0 0 66 54"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M21.5792 54L0 32.4208L9.83398 22.5869L21.5792 34.3668L55.9112 0L65.7452 9.83398L21.5792 54Z"
-                          fill="#C2D8FC"
-                        />
-                      </svg>
+                      <div className="w-20 h-auto md:w-40 md:h-auto">
+                        <svg
+                          className="w-full h-full"
+                          viewBox="0 0 66 54"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M21.5792 54L0 32.4208L9.83398 22.5869L21.5792 34.3668L55.9112 0L65.7452 9.83398L21.5792 54Z"
+                            fill="#C2D8FC"
+                          />
+                        </svg>
+                      </div>
                     )}
 
-                    <div className="font-semibold text-lg">
+                    <div className="font-semibold text-sm md:text-base">
                       {uploadProgress < 100
                         ? "Uploading..."
                         : uploadedFile?.name || "File uploaded"}
@@ -156,8 +157,8 @@ export default function VocalizerForm() {
                       Cancel
                     </Button>
                   ) : (
-                    <>
-                      <span className="text-lg text-white">or</span>
+                    <div className="flex items-center justify-center space-x-4">
+                      <span className="text-lg text-white text-center">or</span>
                       <Button
                         type="button"
                         onClick={() => ref.current?.click()}
@@ -165,7 +166,7 @@ export default function VocalizerForm() {
                       >
                         Browse
                       </Button>
-                    </>
+                    </div>
                   )}
                 </div>
               ) : (
@@ -225,7 +226,7 @@ export default function VocalizerForm() {
                     Instrumental Track
                   </FormLabel>
                   <FormControl>
-                    <div className="relative flex items-center max-w-lg w-full mx-auto lg:mx-0">
+                    <div className="relative flex items-center max-w-xl w-full mx-auto lg:mx-0">
                       <input
                         type="file"
                         accept=".mp3,.wav,.mp4"
@@ -300,7 +301,7 @@ export default function VocalizerForm() {
                     Reference Track
                   </FormLabel>
                   <FormControl>
-                    <div className="relative flex items-center max-w-lg w-full mx-auto lg:mx-0">
+                    <div className="relative flex items-center max-w-xl w-full mx-auto lg:mx-0">
                       <input
                         type="file"
                         accept=".mp3,.wav,.mp4"
@@ -363,10 +364,10 @@ export default function VocalizerForm() {
             />
           </div>
 
-          <div className="w-full flex justify-center lg:justify-start">
+          <div className="flex justify-center lg:justify-start">
             <Button
               type="submit"
-              className="group w-full bg-white hover:bg-blue-50 font-semibold px-4 py-5 text-lg mt-6 max-w-lg relative hover-lift cursor-pointer border-[#c2d8fc] border-2"
+              className="group w-full bg-white hover:bg-blue-50 font-semibold px-4 py-5 text-lg mt-6 max-w-xl relative hover-lift cursor-pointer border-[#c2d8fc] border-2"
             >
               <span className="button-vocalize relative btn-glow font-montserrat">
                 Vocalize

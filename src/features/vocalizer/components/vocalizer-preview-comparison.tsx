@@ -11,7 +11,7 @@ import { FaPlay, FaPause } from "react-icons/fa";
 import VocalizerPreviewTrackButton from "./vocalizer-preview-track-button.";
 import { FaVolumeUp } from "react-icons/fa";
 import Waveform, { WaveformHandle } from "./wave-from";
-import { formatTime } from "@/lib/format-tiime";
+import { formatTime } from "@/lib/format-time";
 
 interface Props {
   isVisible: boolean;
@@ -55,7 +55,11 @@ export function VocalizedPreviewComparison({
 
   return (
     <Dialog open={isVisible} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-5xl w-full p-0 overflow-hidden border-none rounded-lg bg-[#1A1A1A] text-white font-montserrat">
+      <DialogContent
+        className="sm:max-w-5xl w-full p-0 border-none rounded-lg bg-[#1A1A1A] text-white font-montserrat
+    max-h-screen overflow-y-auto sm:max-h-none sm:overflow-visible
+    scrollbar-hide"
+      >
         <DialogHeader>
           <DialogTitle className="sr-only">Preview Vocalized Track</DialogTitle>{" "}
         </DialogHeader>
@@ -69,20 +73,20 @@ export function VocalizedPreviewComparison({
           </div>
         )}
 
-        <div className="flex w-full">
-          <div className="flex flex-col w-[250px] border-r border-[#333]">
+        <div className="flex flex-col md:flex-row w-full">
+          <div className="flex md:flex-col flex-row md:w-[250px] w-full border-b md:border-b-0 md:border-r border-[#333]">
             {["Standard", "Dynamic", "Smooth"].map((label) => (
               <button
                 key={label}
                 onClick={() => setTab(label)}
-                className={`relative flex items-center gap-5 px-5 py-4 text-left transition-colors ${
+                className={`relative flex items-center justify-center md:justify-start gap-1 px-4 py-3 text-left transition-colors w-full ${
                   tab === label
                     ? "bg-[#262626] text-white font-semibold"
                     : "text-[#888]"
                 } hover:bg-[#333]`}
               >
                 {tab === label && (
-                  <span className="absolute left-0 top-0 h-full w-1 bg-[#3B82F6] rounded-r-md" />
+                  <span className="absolute md:left-0 md:top-0 md:h-full md:w-1 left-0 bottom-0 w-full h-[2px] bg-[#3B82F6] md:rounded-r-md" />
                 )}
                 <div className="w-10 text-center">
                   {label === "Standard" && (
@@ -117,7 +121,7 @@ export function VocalizedPreviewComparison({
                     </svg>
                   )}
                 </div>
-                <span className="text-sm">{label}</span>
+                <span className="text-xs">{label}</span>
               </button>
             ))}
           </div>
@@ -127,7 +131,7 @@ export function VocalizedPreviewComparison({
               <div className="p-6 flex items-center gap-6 relative h-[300px]">
                 <button
                   onClick={() => setPlaying(!playing)}
-                  className="w-20 h-18 rounded-full border-[6px] border-white flex items-center justify-center hover:scale-105 transition"
+                  className="w-16 h-16 md:w-20 md:h-18 rounded-full border-[6px] border-white flex items-center justify-center hover:scale-105 transition"
                 >
                   {playing ? (
                     <FaPause className="text-white w-5 h-5" />
@@ -145,18 +149,20 @@ export function VocalizedPreviewComparison({
                   />
                 )}
               </div>
-              <div className="flex flex-col items-start p-4 gap-y-6">
+              <div className="flex flex-col items-start px-10 p-4 gap-y-6">
                 <div className="flex justify-between text-xs text-white px-5 w-full border rounded-3xl bg-[#252525] border-none">
                   <span>{formatTime(currentTime)}</span>
                   <span>{formatTime(duration)}</span>
                 </div>
-                <div className="flex items-center gap-10 px-2">
+
+                <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-6 sm:gap-10 w-full px-2">
                   <VocalizerPreviewTrackButton
                     activeVersion={activeVersion}
                     setActiveVersion={setActiveVersion}
                   />
-                  <div className="flex items-center gap-3">
-                    <FaVolumeUp className="text-white w-5 h-5" />
+
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <FaVolumeUp className="text-white w-5 h-5 shrink-0" />
                     <input
                       type="range"
                       min="0"
@@ -164,27 +170,27 @@ export function VocalizedPreviewComparison({
                       step="0.01"
                       value={volume}
                       onChange={handleVolumeChange}
-                      className="w-32 h-1 bg-gray-600 rounded-full appearance-none custom-slider"
+                      className="flex-1 sm:w-32 h-1 bg-gray-600 rounded-full appearance-none custom-slider"
                     />
                   </div>
                 </div>
               </div>
             </div>
-            <div className="flex justify-center gap-6 pt-4">
-              <button className="px-5 py-3 rounded-full bg-[#444] text-white font-semibold hover:bg-[#555] cursor-pointer">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 pt-4 w-full">
+              <button className="w-full sm:w-auto px-5 py-3 rounded-full bg-[#444] text-white font-semibold hover:bg-[#555] cursor-pointer">
                 + Add to Library
               </button>
 
               <button
                 onClick={() => setDownloadDialogOpen(true)}
-                className="gradient-border-button"
+                className="w-full sm:w-auto gradient-border-button"
               >
                 <span className="text-professional-song font-medium">
                   Download <span className="font-bold ml-1">This</span>
                 </span>
               </button>
 
-              <button className="px-5 py-3 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#234C90] cursor-pointer text-white font-semibold flex items-center gap-2 hover:from-[#60A5FA] hover:to-[#3B82F6]">
+              <button className="w-full sm:w-auto px-5 py-3 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#234C90] cursor-pointer text-white font-semibold flex items-center justify-center gap-2 hover:from-[#60A5FA] hover:to-[#3B82F6]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
