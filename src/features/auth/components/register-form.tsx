@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import googleIcon from "../../../../public/google-icon.svg";
-import { Eye, EyeOff, Loader2 } from "lucide-react"; // gunakan Loader2 sebagai spinner
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import {
   Form,
   FormField,
@@ -27,6 +27,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "../schema/auth";
+import { useRegister } from "../hooks/use-auth";
 
 interface RegisterFormProps {
   isScrolled: boolean;
@@ -34,7 +35,6 @@ interface RegisterFormProps {
 
 export default function RegisterForm({ isScrolled }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof registerSchema>>({
@@ -46,16 +46,14 @@ export default function RegisterForm({ isScrolled }: RegisterFormProps) {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof registerSchema>) => {
-    setIsLoading(true);
-    console.log("Submitting:", values);
+  const { mutate: register, isPending } = useRegister();
 
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsDialogOpen(false);
-      form.reset();
-    }, 2000);
+  const onSubmit = async (values: z.infer<typeof registerSchema>) => {
+    register({ ...values, role: values.role ?? "user" });
+    form.reset();
   };
+
+  console.log(register);
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -191,13 +189,13 @@ export default function RegisterForm({ isScrolled }: RegisterFormProps) {
             <DialogFooter className="mt-2">
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={isPending}
                 className="w-full h-12 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#1B3A6F] hover:opacity-80 text-[#f4f4f4] font-montserrat font-bold text-sm tracking-wide flex items-center justify-center"
               >
-                {isLoading ? (
+                {isPending ? (
                   <Loader2 className="animate-spin w-5 h-5 mr-2" />
                 ) : null}
-                {isLoading ? "Processing..." : "CREATE MY FREE ACCOUNT"}
+                {isPending ? "Processing..." : "CREATE MY FREE ACCOUNT"}
               </Button>
             </DialogFooter>
           </form>

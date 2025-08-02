@@ -9,17 +9,21 @@ export const loginSchema = z.object({
     .min(8, { message: "Password must be at least 8 characters" }),
 });
 
+export type LoginRequest = z.infer<typeof loginSchema>;
+
 export const registerSchema = z.object({
   username: z
     .string({ required_error: "Username is required" })
     .min(4, { message: "Username must be at least 4 characters" }),
   email: z
     .string({ required_error: "Email is required" })
-    .email("Please enter a valid email address"),
+    .email({ message: "Please enter a valid email address" }),
   password: z
     .string({ required_error: "Password is required" })
     .min(8, { message: "Password must be at least 8 characters" }),
+  role: z.enum(["user", "admin"]).default("user").optional(),
 });
+export type RegisterRequest = z.infer<typeof registerSchema>;
 
 export const forgotPasswordSchema = z
   .object({
@@ -50,3 +54,5 @@ export const forgotPasswordSchema = z
     message: "Password dan konfirmasi tidak cocok",
     path: ["confirmPassword"],
   });
+
+export type ForgotPasswordRequest = z.infer<typeof forgotPasswordSchema>;
