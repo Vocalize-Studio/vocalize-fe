@@ -7,6 +7,8 @@ import {
 } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
+import { ReactQueryProviders } from "@/providers/react-query-providers";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,8 +47,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${montserrat.variable} ${playfair.variable} antialiased`}
       >
-        <Navbar />
-        {children}
+        <ReactQueryProviders>
+          <Navbar />
+          {children}
+          <Toaster />
+        </ReactQueryProviders>
       </body>
     </html>
   );

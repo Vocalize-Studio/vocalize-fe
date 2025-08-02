@@ -8,7 +8,7 @@ import StepEmailForm from "./step-email-form";
 import StepNewPasswordForm from "./new-password-form";
 import StepCodeForm from "./step-code-form";
 import StepDoneForm from "./step-done-form";
-import { useStepper } from "../hooks/use-stepper";
+import { useAuthStep } from "../hooks/use-auth-step";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
@@ -28,12 +28,16 @@ export default function ForgotPasswordForm({
 
   const stepRef = useRef(null);
 
-  const { currentIndex, goToNext } = useStepper(4);
+  const { currentIndex, goToNext } = useAuthStep(4);
 
   const steps = [
     <StepEmailForm key="email" next={goToNext} onBackToLogin={onBackToLogin} />,
     <StepCodeForm key="code" next={goToNext} onBackToLogin={onBackToLogin} />,
-    <StepNewPasswordForm key="new" next={goToNext} onBackToLogin={onBackToLogin} />,
+    <StepNewPasswordForm
+      key="new"
+      next={goToNext}
+      onBackToLogin={onBackToLogin}
+    />,
     <StepDoneForm key="done" onBackToLogin={onBackToLogin} />,
   ];
 

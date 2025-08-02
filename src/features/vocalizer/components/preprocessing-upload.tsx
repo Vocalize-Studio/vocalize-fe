@@ -25,7 +25,7 @@ export default function PreprocessingUpload({
 
   useEffect(() => {
     if (!open) return;
-    setProgress(0);
+    setProgress(10);
 
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -47,24 +47,31 @@ export default function PreprocessingUpload({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full sm:max-w-4xl bg-[#252525] text-white border-none rounded-3xl overflow-visible">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center justify-center gap-4">
-            <div className="relative w-12 h-12">
+        <div className="flex items-center justify-center">
+          <div className="grid grid-cols-[auto_1fr] items-center gap-4">
+            <div className="relative w-[clamp(4rem,10vw,6rem)] h-[clamp(4rem,10vw,6rem)]">
               <svg
                 className="w-full h-full transform -rotate-90"
                 viewBox="0 0 36 36"
               >
                 <path
+                  className="text-[#1f2937]"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  fill="none"
+                  d="M18 2a16 16 0 1 1 0 32 16 16 0 0 1 0-32"
+                />
+                <path
                   className="text-[#3B82F6]"
                   stroke="currentColor"
                   strokeWidth="3"
                   fill="none"
-                  strokeDasharray="100"
-                  strokeDashoffset={`${100 - progress}`}
+                  strokeDasharray="100.53"
+                  strokeDashoffset={`${100.53 - (progress / 100) * 100.53}`}
                   d="M18 2a16 16 0 1 1 0 32 16 16 0 0 1 0-32"
                 />
               </svg>
-              <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-white">
+              <div className="absolute inset-0 flex items-center justify-center text-[clamp(0.8rem,2vw,1.2rem)] font-semibold text-white">
                 {progress}%
               </div>
             </div>
@@ -79,8 +86,9 @@ export default function PreprocessingUpload({
             </DialogHeader>
           </div>
         </div>
-        <div className="mt-4 flex flex-col md:flex-row items-center md:items-start justify-between gap-6 pb-6">
-          <div className="md:w-1/2 space-y-4">
+
+        <div className="mt-4 flex flex-col md:flex-row items-start md:items-start justify-between gap-6 pb-6">
+          <div className="md:w-1/2 space-y-4 max-w-lg">
             <h3 className="text-xl text-[#f4f4f4] max-w-md font-semibold leading-snug mb-4">
               How to make <br /> your voice to professional sound <br />
               instant and unlimited

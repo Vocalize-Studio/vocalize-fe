@@ -24,6 +24,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../schema/auth";
 import { z } from "zod";
+import { useLogin } from "../hooks/use-auth";
 
 interface LoginFormProps {
   onForgot: () => void;
@@ -32,22 +33,17 @@ interface LoginFormProps {
 
 export default function LoginForm({ onForgot, onClose }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-    setIsLoading(true);
-    console.log(values);
+  const { mutate: login, isPending } = useLogin();
 
-    setTimeout(() => {
-      setIsLoading(false);
-      onClose();
-      form.reset();
-    }, 2000);
+  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    login(values);
+    form.reset();
   };
 
   return (
@@ -145,13 +141,13 @@ export default function LoginForm({ onForgot, onClose }: LoginFormProps) {
         <DialogFooter className="mt-2">
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isPending}
             className="w-full h-12 uppercase rounded-full bg-gradient-to-r from-[#3B82F6] to-[#1B3A6F] hover:opacity-80 text-[#f4f4f4] font-montserrat font-bold text-sm tracking-wide"
           >
-            {isLoading ? (
+            {isPending ? (
               <Loader2 className="animate-spin w-5 h-5 mr-2" />
             ) : null}
-            {isLoading ? "Processing..." : "LOG IN TO MY ACCOUNT"}
+            {isPending ? "Processing..." : "LOG IN TO MY ACCOUNT"}
           </Button>
         </DialogFooter>
       </form>

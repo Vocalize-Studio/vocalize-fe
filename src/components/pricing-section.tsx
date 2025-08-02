@@ -105,11 +105,11 @@ export function PricingSection() {
         <div className="w-full mt-20">
           <div className="mx-auto flex items-center justify-center">
             <div className="bg-gradient-to-b from-[#3B82F6] to-[#1B3A6F] rounded-lg p-8 md:p-12 text-center text-white cta-card-shadow">
-              <h2 className="text-3xl md:text-5xl font-bold mb-10 font-montserrat">
+              <h2 className="text-xl sm:text-3xl md:text-5xl font-bold mb-10 font-montserrat">
                 Experience AI Vocalizer for yourself
               </h2>
 
-              <p className="text-xl lg:text-2xl mb-2 opacity-90 max-w-4xl mx-auto text-center font-normal font-montserrat leading-normal">
+              <p className="xs:text-lg sm:text-xl lg:text-2xl mb-2 opacity-90 max-w-4xl mx-auto text-center font-normal font-montserrat leading-normal">
                 Master and preview unlimited tracks for free and{" "}
                 <span className="font-bold">
                   only pay when you're ready to download.
@@ -119,7 +119,7 @@ export function PricingSection() {
 
               <Button
                 size="lg"
-                className="bg-white hover:bg-gray-100 px-12 py-8 font-montserrat rounded-full font-semibold text-xl md:text-3xl cursor-pointer mt-4 uppercase max-w-5xl mx-auto btn-custom-shadow"
+                className="bg-white hover:bg-gray-100 px-10 py-6 md:px-12 md:py-8 font-montserrat rounded-full font-semibold text-xl md:text-3xl cursor-pointer mt-4 uppercase max-w-5xl mx-auto btn-custom-shadow"
               >
                 <span className="bg-gradient-to-r from-blue-500 to-[#00025E] bg-clip-text text-transparent">
                   SIGN UP FREE

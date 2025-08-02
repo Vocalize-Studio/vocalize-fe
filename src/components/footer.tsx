@@ -72,18 +72,22 @@ export function Footer() {
         <div className="text-center border-gray-700 pt-4">
           <div className="flex items-center justify-center mb-4">
             <div className="flex items-center">
-              <Image src={Logo} alt="vocalize-logo" />
+              <Image
+                className="w-24 h-24 sm:w-auto sm:h-auto"
+                src={Logo}
+                alt="vocalize-logo"
+              />
               <div className="">
-                <span className="text-6xl font-normal text-professional-song flex items-start">
+                <span className="text-4xl sm:text-6xl font-normal text-professional-song flex items-start">
                   Vocalize
                 </span>
-                <div className="text-lg text-[#FFFFFF] font-normal">
+                <div className="text-base sm:text-lg text-[#FFFFFF] font-normal">
                   Unleash Your Inner Singer
                 </div>
               </div>
             </div>
           </div>
-          <p className="text-[#F4F4F4] text-lg">
+          <p className="text-[#F4F4F4] text-base sm:text-lg">
             ©2025-2030 Vocalize, Corp. All rights reserved.
           </p>
         </div>
