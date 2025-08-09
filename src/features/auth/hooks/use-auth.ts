@@ -1,13 +1,15 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { LoginRequest, RegisterRequest } from "../schema/auth";
-import { login, register } from "../services/auth";
-import { loginAction } from "../actions/auth";
+import { login, logout, register } from "../services/auth";
+import { useUserStore } from "@/store/user";
 
 export const useLogin = () => {
+  const setUser = useUserStore((state) => state.setUser);
   return useMutation({
-    mutationFn: (payload: LoginRequest) => loginAction(payload),
-    onSuccess: () => {
+    mutationFn: (payload: LoginRequest) => login(payload),
+    onSuccess: (data) => {
+      setUser(data.user);
       toast.success("Login successful", {
         description: "Welcome back!",
       });
@@ -31,6 +33,22 @@ export const useRegister = () => {
     onError: (error: Error) => {
       toast.error("Registration failed", {
         description: error.message || "An error occurred while registering.",
+      });
+    },
+  });
+};
+
+export const useLogout = () => {
+  return useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      toast.success("Logout successful", {
+        description: "You have been logged out.",
+      });
+    },
+    onError: (error: Error) => {
+      toast.error("Logout failed", {
+        description: error.message || "An error occurred during logout.",
       });
     },
   });

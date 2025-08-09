@@ -67,12 +67,13 @@ export function TestimonialSection() {
         <div className="w-full max-w-7xl mx-auto px-12">
           <div className="flex items-center justify-between">
             <Button
-              variant="ghost"
-              size="icon"
               onClick={goToPrevious}
-              className="text-gray-800 hover:bg-gray-200 w-auto h-auto md:w-20 md:h-20 rounded-full cursor-pointer"
+              size="icon"
+              className="cursor-pointer rounded-full w-14 h-14 md:w-20 md:h-20  bg-gradient-to-br from-[#BFD6FF] via-[#71A6FF] to-[#2E7BFF]  hover:scale-105 active:scale-95  transition-transform flex items-center justify-center"
             >
-              <ChevronLeft className="w-12 h-12" strokeWidth={5} />
+              <span className="text-white font-bold font-mono text-[1.8rem] leading-none inline-block translate-y-[1px] rotate-180">
+                &gt;
+              </span>
             </Button>
 
             <div
@@ -106,12 +107,13 @@ export function TestimonialSection() {
             </div>
 
             <Button
-              variant="ghost"
-              size="icon"
               onClick={goToNext}
-              className="text-gray-800 hover:bg-gray-200 w-auto h-auto md:w-20 md:h-20 rounded-full cursor-pointer"
+              size="icon"
+              className="cursor-pointer rounded-full w-14 h-14 md:w-20 md:h-20  bg-gradient-to-br from-[#BFD6FF] via-[#71A6FF] to-[#2E7BFF]  hover:scale-105 active:scale-95  transition-transform flex items-center justify-center"
             >
-              <ChevronRight className="w-16 h-16" strokeWidth={5} />
+              <span className="text-white font-bold font-mono text-[1.8rem] leading-none inline-block translate-y-[1px]">
+                &gt;
+              </span>
             </Button>
           </div>
 

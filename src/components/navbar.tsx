@@ -16,13 +16,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { useUserStore } from "@/store/user";
 
 const navItems = ["AI Vocalizer", "Pricing", "Blog", "Library"];
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const user = useUserStore((state) => state.user);
+  const isLoggedIn = !!user;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -87,11 +89,11 @@ export default function Navbar() {
                           isScrolled ? "text-[#3B82F6]" : "text-white"
                         }`}
                       >
-                        abc ▾
+                        {user?.username} ▾
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-40">
-                      <DropdownMenuLabel>abc</DropdownMenuLabel>
+                      <DropdownMenuLabel>{user.username}</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem>Account</DropdownMenuItem>
                       <DropdownMenuItem>My Plan</DropdownMenuItem>
