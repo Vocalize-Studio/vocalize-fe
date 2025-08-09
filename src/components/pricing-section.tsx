@@ -5,7 +5,7 @@ export function PricingSection() {
     <section className="py-20 bg-white space-y-20">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-[#252525] mb-12 font-montserrat">
+          <h2 className="text-3xl md:text-4xl lg:text-6xl font-semibold text-pricing-section mb-12 font-montserrat">
             Our Simple Plan, Three Ways to Pay
           </h2>
           <p className="text-2xl md:text-3xl text-[#252525] mb-4 font-normal font-montserrat opacity-90">
@@ -19,7 +19,7 @@ export function PricingSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto p-4">
           <div className="border-2 rounded-3xl border-gray-200 bg-white shadow-sm flex flex-col h-full">
-            <div className="h-10 bg-blue-500 w-full rounded-t-3xl"></div>
+            <div className="h-10 bg-blue-500 w-full rounded-t-3xl" />
             <div className="p-6 flex-1 flex flex-col justify-between text-center">
               <div>
                 <div className="text-2xl font-semibold mb-6 font-montserrat">
@@ -75,7 +75,7 @@ export function PricingSection() {
             </div>
           </div>
           <div className="border-2 rounded-3xl border-gray-200 bg-white shadow-sm flex flex-col h-full">
-            <div className="h-10 bg-[#234c90] w-full rounded-t-3xl"></div>
+            <div className="h-10 bg-[#3B82F6] w-full rounded-t-3xl" />
             <div className="p-6 flex-1 flex flex-col justify-between text-center">
               <div>
                 <div className="text-2xl font-semibold mb-6 font-montserrat">
@@ -96,7 +96,7 @@ export function PricingSection() {
                   Cancel anytime
                 </p>
               </div>
-              <button className="px-4 w-full bg-[#1B3A6F] hover:bg-[#1B3A5F] text-white py-3 rounded-2xl font-semibold cursor-pointer font-montserrat">
+              <button className="px-4 w-full  bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-2xl font-semibold cursor-pointer font-montserrat">
                 GET STARTED
               </button>
             </div>

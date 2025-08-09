@@ -174,6 +174,16 @@
     -webkit-text-fill-color: transparent;
   }
 
+  .text-pricing-section {
+    background: linear-gradient(90deg, #3b82f6 0%, #1b3a6f 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .card-pricing-shadow {
+    box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.25);
+  }
+
   .nav-hover-btn {
     @apply relative font-semibold ms-10 text-xs uppercase after:absolute after:-bottom-0.5 after:left-0 after:h-[2px] after:w-full after:origin-bottom-right after:scale-x-0 after:transition-transform after:duration-300 after:ease-[cubic-bezier(0.65_0.05_0.36_1)] hover:after:origin-bottom-left hover:after:scale-x-100 cursor-pointer;
   }
@@ -205,7 +215,9 @@
   }
 
   .hover-lift:hover {
-    box-shadow: 0 0 30px 5px rgba(194, 216, 252, 0.4);
+    opacity: 0.3;
+    background: rgba(217, 217, 217, 0);
+    box-shadow: 0 5.044px 18.914px 6.305px rgba(0, 0, 0, 0.25);
   }
 
   .btn-glow {
