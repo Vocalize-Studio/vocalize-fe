@@ -1,5 +1,3 @@
-import { cookies } from "next/headers";
-
 export const apiClient = async <T>(
   endpoint: string,
   method: "GET" | "POST" | "PATCH" | "DELETE" | "PUT",
@@ -10,15 +8,11 @@ export const apiClient = async <T>(
   const baseUrl = process.env.NEXT_API_URL;
   if (!baseUrl) throw new Error("NEXT_API_URL is not defined");
 
-  const cookieStore = cookies();
-  const token = (await cookieStore).get("token")?.value;
-
   const config: RequestInit = {
     method,
     ...options,
     headers: {
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
   };

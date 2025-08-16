@@ -41,9 +41,9 @@ const fileOrUrlSchema = z.union([
 ]);
 
 export const vocalizerSchema = z.object({
-  vocal: fileOrUrlSchema,
-  instrumental: fileOrUrlSchema,
-  reference: fileOrUrlSchema,
+  vocal_audio: fileOrUrlSchema,
+  instrumental_audio: fileOrUrlSchema,
+  reference_audio: fileOrUrlSchema,
 });
 
 export type VocalizerRequest = z.infer<typeof vocalizerSchema>;
