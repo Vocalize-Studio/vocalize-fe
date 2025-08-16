@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -46,11 +46,14 @@ export default function RegisterForm({ isScrolled }: RegisterFormProps) {
     },
   });
 
-  const { mutate: register, isPending } = useRegister();
+  const { mutateAsync: register, isPending } = useRegister();
 
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
-    register({ ...values, role: values.role ?? "user" });
-    form.reset();
+    try {
+      await register({ ...values, role: values.role ?? "user" });
+      form.reset();
+      setIsDialogOpen(false);
+    } catch (_) {}
   };
 
   console.log(register);

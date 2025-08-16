@@ -22,12 +22,14 @@ export default function AudioComparisonSection() {
   } = useAudioComparison();
 
   return (
-    <section className="py-20 px-4 bg-gray-50 min-h-screen">
+    <section className="py-16 md:py-20 px-4 bg-gray-50 relative">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-4xl lg:text-5xl font-semibold text-black font-montserrat">
             Hear the Difference{" "}
-            <span className="text-gradient-vocalize-contrast font-bold">Vocalize</span>{" "}
+            <span className="text-gradient-vocalize-contrast font-bold">
+              Vocalize
+            </span>{" "}
             Makes
           </h2>
           <p className="text-xl text-black max-w-5xl mx-auto font-montserrat font-normal">

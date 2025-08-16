@@ -10,14 +10,14 @@ export default function FeaturedCard({
   subcontent?: string;
 }) {
   return (
-    <Card className="bg-transparent border-white/75 hover:border-white border-2 text-white hover-lift hover:scale-105 group mx-4 md:mx-0">
-      <CardContent>
-        <h3 className="mb-2 text-white font-montserrat font-medium">{title}</h3>
-        <p className="text-xl font-semibold text-white text-start break-words font-montserrat">
+    <Card className="bg-transparent border-2 border-white/75 hover:border-white text-white hover-lift hover:scale-105 mx-4 md:mx-0">
+      <CardContent className="flex flex-col items-start text-left">
+        <h3 className="mb-3 font-montserrat font-medium text-white">{title}</h3>
+        <p className="font-montserrat font-semibold text-xl leading-snug min-h-[3.25rem]">
           {content}
         </p>
         {subcontent && (
-          <p className="text-base font-normal text-white font-montserrat mt-4">
+          <p className="mt-auto pt-4 font-montserrat text-base text-white/90">
             {subcontent}
           </p>
         )}

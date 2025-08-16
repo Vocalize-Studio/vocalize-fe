@@ -50,7 +50,7 @@ export default function RootLayout({
         <ReactQueryProviders>
           <Navbar />
           {children}
-          <Toaster />
+          <Toaster richColors />
         </ReactQueryProviders>
       </body>
     </html>

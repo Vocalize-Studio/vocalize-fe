@@ -10,7 +10,7 @@ import {
 import { FaPlay, FaPause } from "react-icons/fa";
 import VocalizerPreviewTrackButton from "./vocalizer-preview-track-button.";
 import { FaVolumeUp } from "react-icons/fa";
-import Waveform, { WaveformHandle } from "./wave-from";
+import Waveform, { WaveformHandle } from "./waveform";
 import { formatTime } from "@/lib/format-time";
 
 interface Props {
@@ -56,9 +56,9 @@ export function VocalizedPreviewComparison({
   return (
     <Dialog open={isVisible} onOpenChange={onClose}>
       <DialogContent
+        onInteractOutside={(e) => e.preventDefault()}
         className="sm:max-w-5xl w-full p-0 border-none rounded-lg bg-[#1A1A1A] text-white font-montserrat
-    max-h-screen overflow-y-auto sm:max-h-none sm:overflow-visible
-    scrollbar-hide"
+    max-h-[88vh] overflow-y-auto sm:max-h-none  sm:overflow-visible scrollbar-hide"
       >
         <DialogHeader>
           <DialogTitle className="sr-only">Preview Vocalized Track</DialogTitle>{" "}

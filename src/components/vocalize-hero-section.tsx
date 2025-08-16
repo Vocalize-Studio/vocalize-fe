@@ -59,7 +59,7 @@ export default function VocalizeHeroSection() {
 
 export const VocalizerFeatureList = () => {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-16 max-w-[95rem] py-4 md:p-16 mx-auto">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-16 max-w-full py-4 md:p-8 mx-auto items-stretch h-full">
       {vocalizerFeatures.map((feature) => (
         <FeaturedCard
           key={feature.title}

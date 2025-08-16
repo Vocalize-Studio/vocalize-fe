@@ -40,7 +40,7 @@ const socialMedia = [
 
 export function Footer() {
   return (
-    <footer className="bg-[#252525] text-[#F4F4F4]">
+    <footer className="bg-[#252525] text-[#F4F4F4] relative">
       <div className="mx-auto w-full max-w-7xl px-6 py-12">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
           <div className="md:col-span-5">

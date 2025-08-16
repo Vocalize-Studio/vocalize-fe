@@ -12,28 +12,35 @@ import {
 import { Input } from "@/components/ui/input";
 import React, { useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { vocalizerSchema } from "../schema/vocalizer";
+import { VocalizerRequest, vocalizerSchema } from "../schema/vocalizer";
 import { useForm } from "react-hook-form";
 import { VocalizedPreviewComparison } from "./vocalizer-preview-comparison";
 import PreprocessingUpload from "./preprocessing-upload";
 
 export default function VocalizerForm() {
-  const form = useForm<z.infer<typeof vocalizerSchema>>({
+  const form = useForm<VocalizerRequest>({
     resolver: zodResolver(vocalizerSchema),
     defaultValues: {
+      vocal: "",
       instrumental: "",
       reference: "",
     },
+    mode: "onChange",
   });
+
+  const { isValid } = form.formState;
+
   const dragAndDropRef = useRef<HTMLInputElement>(null);
   const ref = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const referenceRef = useRef<HTMLInputElement>(null);
+
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [vocalizeRequest, setVocalizeRequest] =
+    useState<VocalizerRequest | null>(null);
 
   function simulateUpload(file: File) {
     setUploadProgress(0);
@@ -59,162 +66,170 @@ export default function VocalizerForm() {
     }
   }
 
-  async function onSubmit(values: z.infer<typeof vocalizerSchema>) {
-    const isValid = await form.trigger();
+  function resetAllUI() {
+    form.reset({ vocal: "", instrumental: "", reference: "" });
 
-    if (isValid) {
-      setIsUploading(true);
-      form.reset();
-    }
+    if (dragAndDropRef.current) dragAndDropRef.current.value = "";
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (referenceRef.current) referenceRef.current.value = "";
+
+    setUploadedFile(null);
+    setUploadProgress(null);
+  }
+
+  async function onSubmit(values: VocalizerRequest) {
+    const valid = await form.trigger();
+    if (!valid) return;
+
+    // const payload = form.getValues();
+
+    setVocalizeRequest(values);
+
+    setIsUploading(true);
+    resetAllUI();
+
+    // await api.vocalize(payload);
   }
 
   return (
     <div className="space-y-4 mt-4 px-4 sm:px-0">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div
-            onClick={() => dragAndDropRef.current?.click()}
-            onDragOver={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            onDrop={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const file = e.dataTransfer.files?.[0];
-              if (file) {
-                simulateUpload(file);
-              }
-            }}
-            className="bg-transparent border-3 border-dashed border-white rounded-xl p-6 transition-colors max-w-xl w-full hover-lift mx-auto lg:mx-0 mt-4"
-          >
-            <input
-              type="file"
-              accept=".mp3,.mp4,.wav"
-              ref={dragAndDropRef}
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  simulateUpload(file);
-                }
-              }}
-            />
+          <FormField
+            control={form.control}
+            name="vocal"
+            render={({ field: { onChange, value } }) => (
+              <FormItem>
+                <FormControl>
+                  <div
+                    onClick={() => dragAndDropRef.current?.click()}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const file = e.dataTransfer.files?.[0];
+                      if (file) {
+                        simulateUpload(file);
+                        onChange(file);
+                      }
+                    }}
+                    className="bg-transparent border-3 border-dashed border-white rounded-xl p-6 transition-colors max-w-xl w-full hover-lift mx-auto lg:mx-0 mt-2 cursor-pointer"
+                  >
+                    <input
+                      type="file"
+                      accept=".mp3,.mp4,.wav"
+                      ref={dragAndDropRef}
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          simulateUpload(file);
+                          onChange(file);
+                        }
+                      }}
+                    />
 
-            <div className="relative w-full">
-              {uploadProgress !== null ? (
-                <div className="flex items-center justify-between w-full text-white p-4 rounded-xl">
-                  <div className="flex items-center gap-3 max-w-sm">
-                    {uploadProgress < 100 ? (
-                      <div className="relative w-16 h-16">
-                        <svg
-                          className="w-full h-full transform -rotate-90"
-                          viewBox="0 0 36 36"
-                        >
-                          <path
-                            className="text-[#C2D8FC]"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                            fill="none"
-                            strokeDasharray="100"
-                            strokeDashoffset={`${100 - uploadProgress}`}
-                            d="M18 2a16 16 0 1 1 0 32 16 16 0 0 1 0-32"
-                          />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center text-base font-semibold">
-                          {uploadProgress}%
+                    <div className="relative w-full">
+                      {uploadProgress !== null ? (
+                        <div className="flex items-center justify-between w-full text-white p-4 rounded-xl">
+                          <div className="flex items-center gap-3 max-w-sm">
+                            {uploadProgress < 100 ? (
+                              <ProgressCircle value={uploadProgress} />
+                            ) : (
+                              <SuccessCheck />
+                            )}
+                            <div className="font-semibold text-sm md:text-base">
+                              {uploadProgress < 100
+                                ? "Uploading..."
+                                : (typeof value !== "string" && value?.name) ||
+                                  uploadedFile?.name ||
+                                  "File uploaded"}
+                            </div>
+                          </div>
+
+                          {uploadProgress < 100 ? (
+                            <Button
+                              type="button"
+                              onClick={() => {
+                                setUploadedFile(null);
+                                setUploadProgress(null);
+                                onChange("");
+                                if (dragAndDropRef.current)
+                                  dragAndDropRef.current.value = "";
+                              }}
+                              className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1"
+                            >
+                              Cancel
+                            </Button>
+                          ) : (
+                            <div className="flex items-center justify-center space-x-4">
+                              <span className="text-lg text-white text-center">
+                                or
+                              </span>
+                              <Button
+                                type="button"
+                                onClick={() => dragAndDropRef.current?.click()}
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 cursor-pointer border-[#C2D8FC] border-1 font-semibold font-montserrat"
+                              >
+                                Browse
+                              </Button>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    ) : (
-                      <div className="w-20 h-auto md:w-40 md:h-auto">
-                        <svg
-                          className="w-full h-full"
-                          viewBox="0 0 66 54"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M21.5792 54L0 32.4208L9.83398 22.5869L21.5792 34.3668L55.9112 0L65.7452 9.83398L21.5792 54Z"
-                            fill="#C2D8FC"
-                          />
-                        </svg>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-12 max-w-lg">
+                          <div className="flex flex-col items-center space-y-2">
+                            <svg
+                              width="53"
+                              height="52"
+                              viewBox="0 0 53 52"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M26.8824 47.5588C38.8218 47.5588 48.5 37.8806 48.5 25.9412C48.5 14.0017 38.8218 4.32353 26.8824 4.32353C14.9429 4.32353 5.26471 14.0017 5.26471 25.9412C5.26471 37.8806 14.9429 47.5588 26.8824 47.5588Z"
+                                stroke="#C2D8FC"
+                                strokeWidth="2.47059"
+                              />
+                              <path
+                                d="M33.3677 19.4559V32.4265M39.853 23.7794V28.1029M20.3971 19.4559V32.4265M13.9118 23.7794V28.1029M26.8824 15.1324V36.75"
+                                stroke="#C2D8FC"
+                                strokeWidth="2.47059"
+                                strokeLinecap="round"
+                              />
+                            </svg>
+                            <p className="text-white text-sm md:text-base text-center font-semibold font-montserrat">
+                              Your Voice
+                            </p>
+                          </div>
 
-                    <div className="font-semibold text-sm md:text-base">
-                      {uploadProgress < 100
-                        ? "Uploading..."
-                        : uploadedFile?.name || "File uploaded"}
+                          <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-8 text-white max-w-2xl mx-auto">
+                            <span className="text-base font-semibold font-montserrat text-center">
+                              Drag & Drop
+                            </span>
+                            <span className="text-base text-white font-semibold font-montserrat">
+                              or
+                            </span>
+                            <Button
+                              type="button"
+                              onClick={() => dragAndDropRef.current?.click()}
+                              className="bg-[#3B82F6] border-none text-white hover:bg-blue-700 hover:text-white cursor-pointer font-montserrat font-normal text-lg"
+                            >
+                              Browse
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
-
-                  {uploadProgress < 100 ? (
-                    <Button
-                      type="button"
-                      onClick={cancelUpload}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1"
-                    >
-                      Cancel
-                    </Button>
-                  ) : (
-                    <div className="flex items-center justify-center space-x-4">
-                      <span className="text-lg text-white text-center">or</span>
-                      <Button
-                        type="button"
-                        onClick={() => ref.current?.click()}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 cursor-pointer"
-                      >
-                        Browse
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-12 max-w-lg">
-                  <div className="flex flex-col items-center space-y-2">
-                    <svg
-                      width="53"
-                      height="52"
-                      viewBox="0 0 53 52"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M26.8823 47.5588C38.8217 47.5588 48.4999 37.8806 48.4999 25.9412C48.4999 14.0017 38.8217 4.32353 26.8823 4.32353C14.9429 4.32353 5.26465 14.0017 5.26465 25.9412C5.26465 37.8806 14.9429 47.5588 26.8823 47.5588Z"
-                        stroke="#C2D8FC"
-                        strokeWidth="2.47059"
-                      />
-                      <path
-                        d="M33.3676 19.4559V32.4265M39.8529 23.7794V28.1029M20.397 19.4559V32.4265M13.9117 23.7794V28.1029M26.8823 15.1324V36.75"
-                        stroke="#C2D8FC"
-                        strokeWidth="2.47059"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <p className="text-white text-sm md:text-base text-center font-semibold font-montserrat">
-                      Your Voice
-                    </p>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-8 text-white max-w-2xl mx-auto">
-                    <span className="text-base font-semibold font-montserrat text-center">
-                      Drag & Drop
-                    </span>
-                    <span className="text-base text-white font-semibold font-montserrat">
-                      or
-                    </span>
-                    <Button
-                      type="button"
-                      onClick={() => ref.current?.click()}
-                      className="bg-[#3B82F6] border-none text-white hover:bg-blue-700 hover:text-white cursor-pointer font-montserrat font-normal text-lg"
-                    >
-                      Browse
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+                </FormControl>
+                <FormMessage className="w-full max-w-xl mx-auto text-center mt-1 lg:mx-0 lg:text-left font-medium text-lg" />
+              </FormItem>
+            )}
+          />
 
           <div className="space-y-2 mt-4">
             <FormField
@@ -273,7 +288,7 @@ export default function VocalizerForm() {
                         }
                         onChange={(e) => onChange(e.target.value)}
                         placeholder="Paste the Link here"
-                        className="pl-12 pr-28 bg-white border-white/50 text-gray-500 placeholder:text-[#585858]/50 input-glow"
+                        className="!text-[#3B82F6] pl-12 pr-28 bg-white border-white/50 placeholder:text-[#585858]/50 input-glow font-montserrat"
                       />
 
                       <Button
@@ -285,7 +300,7 @@ export default function VocalizerForm() {
                       </Button>
                     </div>
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="w-full max-w-xl mx-auto text-center mt-1 lg:mx-0 lg:text-left font-medium text-lg" />
                 </FormItem>
               )}
             />
@@ -346,7 +361,7 @@ export default function VocalizerForm() {
                         }
                         onChange={(e) => onChange(e.target.value)}
                         placeholder="Paste the Link here"
-                        className="pl-12 pr-28 bg-white border-white/50 text-gray-500 placeholder:text-[#585858]/50 input-glow"
+                        className="!text-[#3B82F6] pl-12 pr-28 bg-white border-white/50 placeholder:text-[#585858]/50 input-glow font-montserrat"
                       />
 
                       <Button
@@ -358,7 +373,7 @@ export default function VocalizerForm() {
                       </Button>
                     </div>
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="w-full max-w-xl mx-auto text-center mt-1 lg:mx-0 lg:text-left font-medium text-lg" />
                 </FormItem>
               )}
             />
@@ -367,12 +382,26 @@ export default function VocalizerForm() {
           <div className="flex justify-center lg:justify-start">
             <Button
               type="submit"
-              className="group w-full bg-white hover:bg-blue-50 font-semibold px-4 py-5 text-lg mt-6 max-w-xl relative hover-lift cursor-pointer border-[#c2d8fc] border-2"
+              className={`group w-full font-semibold px-4 py-5 text-lg mt-6 max-w-xl relative hover-lift cursor-pointer border-2
+                ${
+                  isValid
+                    ? "bg-blue-500 text-white hover:bg-blue-600 border-[#C2D8FC]"
+                    : "bg-white text-gray-400 hover:bg-blue-50 border-[#c2d8fc]"
+                }
+              `}
             >
-              <span className="button-vocalize relative btn-glow font-montserrat">
+              <span
+                className={`relative font-montserrat ${
+                  isValid ? "text-white" : "button-vocalize btn-glow"
+                }`}
+              >
                 Vocalize
-                <span className="inline-block text-sm align-super translate-y-[-0.05em] opacity-0 group-hover:opacity-100 transition duration-400 hover:from-blue-200 hover:to-blue-400">
-                  ✨
+                <span
+                  className={`inline-block text-sm align-super -translate-y-[0.05em] 
+              opacity-0 group-hover:opacity-100 transition duration-100
+              ${isValid ? "text-white" : "text-blue-500"} leading-none`}
+                >
+                  {"\u2728\uFE0E"}
                 </span>
               </span>
             </Button>
@@ -392,13 +421,54 @@ export default function VocalizerForm() {
         fileName={uploadedFile?.name}
       />
 
-      {showPreview && (
+      {showPreview && vocalizeRequest && (
         <VocalizedPreviewComparison
           isVisible={showPreview}
           onClose={() => setShowPreview(false)}
-          uploadedFile={uploadedFile}
+          uploadedFile={
+            vocalizeRequest.vocal instanceof File ? vocalizeRequest.vocal : null
+          }
         />
       )}
+    </div>
+  );
+}
+
+export function ProgressCircle({ value }: { value: number }) {
+  return (
+    <div className="relative w-16 h-16">
+      <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+        <path
+          className="text-[#C2D8FC]"
+          stroke="currentColor"
+          strokeWidth="4"
+          fill="none"
+          strokeDasharray="100"
+          strokeDashoffset={`${100 - value}`}
+          d="M18 2a16 16 0 1 1 0 32 16 16 0 0 1 0-32"
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center text-base font-semibold">
+        {value}%
+      </div>
+    </div>
+  );
+}
+
+export function SuccessCheck() {
+  return (
+    <div className="w-20 h-auto md:w-40 md:h-auto">
+      <svg
+        className="w-full h-full"
+        viewBox="0 0 66 54"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M21.5792 54L0 32.4208L9.83398 22.5869L21.5792 34.3668L55.9112 0L65.7452 9.83398L21.5792 54Z"
+          fill="#C2D8FC"
+        />
+      </svg>
     </div>
   );
 }
