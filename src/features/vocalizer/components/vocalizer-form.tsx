@@ -16,14 +16,15 @@ import { VocalizerRequest, vocalizerSchema } from "../schema/vocalizer";
 import { useForm } from "react-hook-form";
 import { VocalizedPreviewComparison } from "./vocalizer-preview-comparison";
 import PreprocessingUpload from "./preprocessing-upload";
+import { useUploadFile } from "../hooks/use-upload-file";
 
 export default function VocalizerForm() {
   const form = useForm<VocalizerRequest>({
     resolver: zodResolver(vocalizerSchema),
     defaultValues: {
-      vocal: "",
-      instrumental: "",
-      reference: "",
+      vocal_audio: "",
+      instrumental_audio: "",
+      reference_audio: "",
     },
     mode: "onChange",
   });
@@ -41,6 +42,8 @@ export default function VocalizerForm() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [vocalizeRequest, setVocalizeRequest] =
     useState<VocalizerRequest | null>(null);
+
+  const { mutate: uploadFile } = useUploadFile();
 
   function simulateUpload(file: File) {
     setUploadProgress(0);
@@ -67,7 +70,11 @@ export default function VocalizerForm() {
   }
 
   function resetAllUI() {
-    form.reset({ vocal: "", instrumental: "", reference: "" });
+    form.reset({
+      vocal_audio: "",
+      instrumental_audio: "",
+      reference_audio: "",
+    });
 
     if (dragAndDropRef.current) dragAndDropRef.current.value = "";
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -81,14 +88,12 @@ export default function VocalizerForm() {
     const valid = await form.trigger();
     if (!valid) return;
 
-    // const payload = form.getValues();
-
     setVocalizeRequest(values);
 
     setIsUploading(true);
     resetAllUI();
 
-    // await api.vocalize(payload);
+    await uploadFile(values);
   }
 
   return (
@@ -97,7 +102,7 @@ export default function VocalizerForm() {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
-            name="vocal"
+            name="vocal_audio"
             render={({ field: { onChange, value } }) => (
               <FormItem>
                 <FormControl>
@@ -234,7 +239,7 @@ export default function VocalizerForm() {
           <div className="space-y-2 mt-4">
             <FormField
               control={form.control}
-              name="instrumental"
+              name="instrumental_audio"
               render={({ field: { onChange, value, ref } }) => (
                 <FormItem>
                   <FormLabel className="text-white font-semibold text-lg font-montserrat mx-auto lg:mx-0">
@@ -309,7 +314,7 @@ export default function VocalizerForm() {
           <div className="space-y-2 mt-4">
             <FormField
               control={form.control}
-              name="reference"
+              name="reference_audio"
               render={({ field: { onChange, value, ref } }) => (
                 <FormItem>
                   <FormLabel className="text-white font-semibold text-lg font-montserrat mx-auto lg:mx-0">
@@ -426,7 +431,9 @@ export default function VocalizerForm() {
           isVisible={showPreview}
           onClose={() => setShowPreview(false)}
           uploadedFile={
-            vocalizeRequest.vocal instanceof File ? vocalizeRequest.vocal : null
+            vocalizeRequest.vocal_audio instanceof File
+              ? vocalizeRequest.vocal_audio
+              : null
           }
         />
       )}
@@ -457,7 +464,7 @@ export function ProgressCircle({ value }: { value: number }) {
 
 export function SuccessCheck() {
   return (
-    <div className="w-20 h-auto md:w-40 md:h-auto">
+    <div className="w-8 h-8 md:w-10 md:h-10 flex-shrink-0">
       <svg
         className="w-full h-full"
         viewBox="0 0 66 54"
