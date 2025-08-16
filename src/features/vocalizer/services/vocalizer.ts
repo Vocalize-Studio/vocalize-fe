@@ -1,14 +1,19 @@
 import { apiClient } from "@/lib/api-client";
+import { VocalizerRequest } from "../schema/vocalizer";
 
-export type UploadPayload = {
-  file: File;
-  file_type: string;
-};
-
-export async function fileUpload({ file, file_type }: UploadPayload) {
+export async function fileUpload(values: VocalizerRequest) {
   const fd = new FormData();
-  fd.append("file", file);
-  fd.append("file_type", file_type);
+
+  (Object.keys(values) as (keyof VocalizerRequest)[]).forEach((key) => {
+    const val = values[key];
+    if (val instanceof File) {
+      fd.append(key, val);
+    } else if (typeof val === "string") {
+      fd.append(key, val);
+    }
+  });
+
+  fd.append("auto_start_ml_job", "true");
 
   return await apiClient("/api/v1/files/upload", "POST", { body: fd });
 }
