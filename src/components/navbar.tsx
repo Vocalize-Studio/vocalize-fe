@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { Menu, User, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import Image from "next/image";
 import logo from "../../public/vocalize-logo.svg";
 import logoBlue from "../../public/vocalize-logo-blue.svg";
@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useUserStore } from "@/store/user";
+import { useLogout } from "@/features/auth/hooks/use-auth";
 
 const navItems = ["AI Vocalizer", "Pricing", "Blog", "Library"];
 
@@ -25,6 +26,8 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const user = useUserStore((state) => state.user);
   const isLoggedIn = !!user;
+
+  const { mutate: logout } = useLogout();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,7 +40,7 @@ export default function Navbar() {
 
   return (
     <div
-      className={`fixed inset-x-0 top-4 z-50 h-16 transition-all duration-500 sm:inset-x-6 ${
+      className={`fixed inset-x-0 top-4 z-50 h-14 md:h-16 transition-all duration-500 sm:inset-x-6 md:inset-x-8  ${
         isScrolled
           ? "bg-white/70 backdrop-blur-md shadow-md rounded-xl"
           : "bg-transparent"
@@ -85,21 +88,29 @@ export default function Navbar() {
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="ghost"
-                        className={`font-semibold font-montserrat text-base ${
-                          isScrolled ? "text-[#3B82F6]" : "text-white"
+                        className={`font-semibold font-montserrat text-base hover:bg-transparent hover:text-white cursor-pointer ${
+                          isScrolled
+                            ? "text-[#3B82F6] hover:text-[#3B82F6]"
+                            : "text-white hover:text-white"
                         }`}
                       >
-                        {user?.username} ▾
+                        {user?.username || "jason"}
+                        <ChevronDown className="ml-1 w-5 h-5 md:w-6 md:h-6" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-40">
-                      <DropdownMenuLabel>{user.username}</DropdownMenuLabel>
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-40 font-montserrat"
+                    >
+                      <DropdownMenuLabel>
+                        {user?.username || "jason"}
+                      </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem>Account</DropdownMenuItem>
                       <DropdownMenuItem>My Plan</DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        onClick={() => {}}
+                        onClick={() => logout()}
                         className="text-red-500 focus:text-red-500"
                       >
                         Logout
@@ -152,10 +163,60 @@ export default function Navbar() {
                 </a>
               ))}
 
-              <div className="flex flex-col gap-3 mt-4">
-                <LoginDialog isScrolled={isScrolled} />
-                <RegisterForm isScrolled={isScrolled} />
-              </div>
+              {isLoggedIn ? (
+                <div className="mt-4 text-center">
+                  <div
+                    className={`mb-2 text-sm ${
+                      isScrolled ? "text-[#3B82F6]" : "text-white"
+                    }`}
+                  >
+                    Signed in as{" "}
+                    <span className="font-bold text-lg">
+                      {user?.username || "jason"}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col gap-2 items-center justify-center font-montserrat">
+                    <Button
+                      variant="ghost"
+                      className={`justify-start ${
+                        isScrolled ? "text-[#3B82F6]" : "text-white"
+                      }`}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      Account
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className={`justify-start ${
+                        isScrolled ? "text-[#3B82F6]" : "text-white"
+                      }`}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      My Plan
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      className="justify-start cursor-pointer"
+                      onClick={() => {
+                        logout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      Logout
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3 mt-4">
+                  <LoginDialog isScrolled={isScrolled} />
+                  <RegisterForm isScrolled={isScrolled} />
+                </div>
+              )}
             </div>
           </div>
         )}

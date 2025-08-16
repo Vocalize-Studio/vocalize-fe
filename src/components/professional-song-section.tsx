@@ -57,7 +57,7 @@ export default function ProfessionalSongSection() {
       <div className="relative z-10 grid lg:grid-cols-2 items-center lg:h-full">
         <div className="hidden lg:block" />
         <div className="w-full max-w-3xl px-6 py-12 lg:px-16 mx-auto">
-          <h2 className="text-3xl md:text-5xl font-bold leading-tight mb-10 text-center lg:text-left">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-10 text-center lg:text-left">
             <span className="text-professional-song font-montserrat">
               Professional Song
             </span>

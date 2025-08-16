@@ -51,7 +51,5 @@ export async function logout(): Promise<{
     "POST"
   );
 
-  (await cookies()).delete("token");
-
   return res;
 }
