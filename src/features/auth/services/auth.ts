@@ -18,7 +18,7 @@ export async function login(payload: LoginRequest): Promise<{
     body: JSON.stringify(payload),
   });
 
-  const { access_token, expires_in, user } = res.data;
+  const { access_token, refresh_token, expires_in, user } = res.data;
 
   const cookieStore = await cookies();
   cookieStore.set("token", access_token, {
@@ -26,6 +26,13 @@ export async function login(payload: LoginRequest): Promise<{
     secure: true,
     path: "/",
     maxAge: expires_in ?? 60 * 60 * 24,
+  });
+
+  cookieStore.set("refresh_token", refresh_token, {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
   });
 
   return {
@@ -42,14 +49,8 @@ export async function register(payload: RegisterRequest): Promise<any> {
   return res;
 }
 
-export async function logout(): Promise<{
-  success: boolean;
-  message: string;
-} | null> {
-  const res = await apiClient<{ success: boolean; message: string }>(
-    "/api/v1/auth/logout",
-    "POST"
-  );
-
-  return res;
+export async function logout(): Promise<void> {
+  const c = await cookies();
+  c.set("token", "", { httpOnly: true, path: "/", maxAge: 0 });
+  c.set("refresh_token", "", { httpOnly: true, path: "/", maxAge: 0 });
 }

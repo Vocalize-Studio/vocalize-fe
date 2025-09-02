@@ -1,49 +1,45 @@
+"use client";
+
 import React from "react";
+import { Button } from "./ui/button";
+import { useLoginDialogStore } from "@/store/login-dialog-store";
+import { useRouter } from "next/navigation";
 
-export default function CtaSection() {
+export function CtaSection({ isLoggedIn }: { isLoggedIn: boolean }) {
+  const { open } = useLoginDialogStore();
+  const router = useRouter();
+
   return (
-    <section className="bg-[#252525] text-white w-full">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 lg:py-14 grid grid-cols-1 md:grid-cols-[1.2fr_.8fr] items-center gap-8 lg:gap-10">
-        <div className="max-w-[48rem] md:max-w-[34rem] md:justify-self-start justify-self-center">
-          <h2
-            className="font-bold font-montserrat text-center md:text-left leading-tight text-professional-song
-               text-[clamp(2.5rem,5vw,3.5rem)]  /* naikkan min & max */
-               sm:text-[clamp(2.5rem,5vw,3.5rem)]"
-          >
-            AI-Powered Song
-            <br className="hidden sm:block" /> Production
-          </h2>
+    <div className="max-w-6xl mx-auto px-4">
+      <div className="w-full rounded-3xl bg-gradient-to-b from-[#3B82F6] to-[#1B3A6F] p-8 md:p-12 text-center text-white cta-card-shadow">
+        <h2 className="text-xl sm:text-3xl md:text-5xl font-bold mb-10 font-montserrat">
+          Experience AI Vocalizer for yourself
+        </h2>
 
-          <p
-            className="mt-4 md:mt-3 text-center md:text-left text-[#CFCFCF] font-montserrat
-               text-[clamp(1rem,2.5vw,1.25rem)] /* naikkan paragraf juga */
-               leading-snug"
-          >
-            Turn your raw vocal into a fully-produced song. Just upload your
-            voice, choose a style, and our AI will build the music around it.
-            Get closer than ever to the{" "}
-            <span className="font-bold text-white">
-              fully-produced song you’ve imagined.
-            </span>
-          </p>
-        </div>
+        <p className="xs:text-lg sm:text-xl lg:text-2xl my-4 opacity-90 max-w-4xl mx-auto font-normal font-montserrat leading-normal">
+          Master and preview unlimited tracks for free and{" "}
+          <span className="font-bold">
+            only pay when you're ready to download.
+          </span>{" "}
+          Get started today!
+        </p>
 
-        <div className="w-full md:justify-self-start justify-self-center">
-          <div className="flex justify-center md:justify-start items-center w-full h-full">
-            <div className="flex overflow-hidden rounded-xs">
-              <div className="p-4 md:p-8 lg:p-12 text-base md:text-lg lg:text-2xl text-gray-400 font-bold border-4 rounded-l-lg border-[#929292] bg-transparent font-montserrat">
-                ORIGINAL
-              </div>
-              <div className="w-px bg-blue-200"></div>
-              <div className="border-gradient-right">
-                <div className="p-4 md:p-8 lg:p-12 text-base md:text-lg lg:text-2xl text-white font-bold bg-[#252525] rounded-r-lg font-montserrat">
-                  VOCALIZED
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Button
+          onClick={() => {
+            if (isLoggedIn) {
+              router.push("/");
+            } else {
+              open("login");
+            }
+          }}
+          size="lg"
+          className="bg-white hover:bg-gray-100 md:mt-12 px-10 py-6 md:px-12 md:py-8 font-montserrat rounded-full font-semibold text-xl md:text-3xl cursor-pointer uppercase max-w-5xl mx-auto"
+        >
+          <span className="bg-gradient-to-r from-blue-500 to-[#00025E] bg-clip-text text-transparent">
+            {isLoggedIn ? "VOCALIZE" : "SIGN UP FREE"}
+          </span>
+        </Button>
       </div>
-    </section>
+    </div>
   );
 }

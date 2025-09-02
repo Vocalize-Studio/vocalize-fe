@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,30 +8,42 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { FaPlay, FaPause } from "react-icons/fa";
-import VocalizerPreviewTrackButton from "./vocalizer-preview-track-button.";
+import VocalizerPreviewTrackButton from "./vocalizer-preview-track-button";
 import { FaVolumeUp } from "react-icons/fa";
 import Waveform, { WaveformHandle } from "./waveform";
 import { formatTime } from "@/lib/format-time";
+import { Icon } from "@iconify/react";
+
+type ResultUrls = {
+  standard_url?: string | null;
+  dynamic_url?: string | null;
+  smooth_url?: string | null;
+  result_uri?: string | null;
+};
+
+const TABS = ["Standard", "Dynamic", "Smooth"] as const;
+type Mode = (typeof TABS)[number];
 
 interface Props {
   isVisible: boolean;
   onClose: () => void;
   uploadedFile: File | null;
+  result: ResultUrls;
 }
 
 export function VocalizedPreviewComparison({
   isVisible,
   onClose,
   uploadedFile,
+  result,
 }: Props) {
-  const [tab, setTab] = useState("Standard");
-  const [playing, setPlaying] = useState(false);
+  const [tab, setTab] = useState<Mode>("Standard");
+  const [playing, setPlaying] = useState<boolean>(false);
   const [activeVersion, setActiveVersion] = useState<"original" | "vocalized">(
     "original"
   );
   const [volume, setVolume] = useState(1);
   const waveformRef = useRef<WaveformHandle | null>(null);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const vol = parseFloat(e.target.value);
@@ -44,17 +56,74 @@ export function VocalizedPreviewComparison({
   const [isDownloadDialogOpen, setDownloadDialogOpen] =
     useState<boolean>(false);
 
-  useEffect(() => {
-    if (uploadedFile) {
-      const url = URL.createObjectURL(uploadedFile);
-      setAudioUrl(url);
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
 
-      return () => URL.revokeObjectURL(url);
+  useEffect(() => {
+    if (!uploadedFile) {
+      setBlobUrl(null);
+      return;
     }
+    const url = URL.createObjectURL(uploadedFile);
+    setBlobUrl(url);
+    return () => URL.revokeObjectURL(url);
   }, [uploadedFile]);
 
+  const currentAudioUrl = useMemo(() => {
+    if (activeVersion === "original") return blobUrl ?? undefined;
+    return getModeUrl(tab, result);
+  }, [activeVersion, blobUrl, tab, result]);
+
+  useEffect(() => {
+    setPlaying(false);
+    setCurrentTime(0);
+  }, [currentAudioUrl]);
+
+  const handleDownloadThis = async () => {
+    let url: string | undefined;
+    if (activeVersion === "original") {
+      if (!uploadedFile) return;
+      const name = uploadedFile.name || "original.wav";
+      const a = document.createElement("a");
+      a.href = blobUrl || URL.createObjectURL(uploadedFile);
+      a.download = name;
+      a.click();
+      return;
+    } else {
+      url = getModeUrl(tab, result) ?? result.result_uri ?? undefined;
+    }
+    if (!url) return;
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `my-song_Vocalized_${tab}.wav`;
+    a.rel = "noopener";
+    a.click();
+  };
+
+  const handleDownloadAll = async () => {
+    const urls = [
+      result.standard_url
+        ? { url: result.standard_url, name: "Standard" }
+        : null,
+      result.dynamic_url ? { url: result.dynamic_url, name: "Dynamic" } : null,
+      result.smooth_url ? { url: result.smooth_url, name: "Smooth" } : null,
+    ].filter(Boolean) as { url: string; name: string }[];
+
+    urls.forEach(({ url, name }) => {
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `my-song_Vocalized_${name}.wav`;
+      a.rel = "noopener";
+      a.click();
+    });
+  };
+
   return (
-    <Dialog open={isVisible} onOpenChange={onClose}>
+    <Dialog
+      open={isVisible}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
       <DialogContent
         onInteractOutside={(e) => e.preventDefault()}
         className="sm:max-w-5xl w-full p-0 border-none rounded-lg bg-[#1A1A1A] text-white font-montserrat
@@ -69,13 +138,13 @@ export function VocalizedPreviewComparison({
           </div>
         ) : (
           <div className="flex items-center justify-between px-4 py-2 text-sm font-medium text-red-500">
-            <span>Tidak ada file</span>
+            <span>No file</span>
           </div>
         )}
 
         <div className="flex flex-col md:flex-row w-full">
           <div className="flex md:flex-col flex-row md:w-[250px] w-full border-b md:border-b-0 md:border-r border-[#333]">
-            {["Standard", "Dynamic", "Smooth"].map((label) => (
+            {TABS.map((label) => (
               <button
                 key={label}
                 onClick={() => setTab(label)}
@@ -90,35 +159,28 @@ export function VocalizedPreviewComparison({
                 )}
                 <div className="w-10 text-center">
                   {label === "Standard" && (
-                    <span className="text-lg font-bold text-[#f4f4f4]">SD</span>
-                  )}
-                  {label === "Dynamic" && (
-                    <svg
+                    <Icon
+                      icon="mdi:standard-definition"
                       width="44"
                       height="40"
-                      viewBox="0 0 44 44"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M23.375 28.875H15.125C14.3674 28.875 13.75 28.2563 13.75 27.5C13.75 26.7437 14.3674 26.125 15.125 26.125H23.375C24.1313 26.125 24.75 26.7437 24.75 27.5C24.75 28.2563 24.1313 28.875 23.375 28.875ZM30.25 23.375H19.25C18.4924 23.375 17.875 22.7563 17.875 22C17.875 21.2437 18.4924 20.625 19.25 20.625H30.25C31.0063 20.625 31.625 21.2437 31.625 22C31.625 22.7563 31.0063 23.375 30.25 23.375ZM26.125 17.875H15.125C14.3674 17.875 13.75 17.2563 13.75 16.5C13.75 15.7437 14.3674 15.125 15.125 15.125H26.125C26.8813 15.125 27.5 15.7437 27.5 16.5C27.5 17.2563 26.8813 17.875 26.125 17.875ZM22 5.5C12.8865 5.5 5.5 12.8879 5.5 22C5.5 31.1121 12.8865 38.5 22 38.5C31.1121 38.5 38.5 31.1121 38.5 22C38.5 12.8879 31.1121 5.5 22 5.5Z"
-                        fill="#929292"
-                      />
-                    </svg>
+                      color={tab ? "text-[#f4f4f4]" : "text-[#929292]"}
+                    />
+                  )}
+                  {label === "Dynamic" && (
+                    <Icon
+                      icon="cbi:scene-dynamic"
+                      width="44"
+                      height="40"
+                      color={tab ? "text-[#f4f4f4]" : "text-[#929292]"}
+                    />
                   )}
                   {label === "Smooth" && (
-                    <svg
-                      width="40"
-                      height="24"
-                      viewBox="0 0 40 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M38 0C34.68 0 32 2.68 32 6V14C32 15.1 31.1 16 30 16V8C30 4.68 27.32 2 24 2H16C12.68 2 10 4.68 10 8H14C14 6.9 14.9 6 16 6H24C25.1 6 26 6.9 26 8V10H8C3.58 10 0 13.58 0 18V24H30V20C33.32 20 36 17.32 36 14V6C36 4.9 36.9 4 38 4H40V0H38Z"
-                        fill="#929292"
-                      />
-                    </svg>
+                    <Icon
+                      icon="mdi:smoothing-iron"
+                      width="44"
+                      height="40"
+                      color={tab ? "text-[#f4f4f4]" : "text-[#929292]"}
+                    />
                   )}
                 </div>
                 <span className="text-xs">{label}</span>
@@ -139,10 +201,10 @@ export function VocalizedPreviewComparison({
                     <FaPlay className="text-white w-5 h-5" />
                   )}
                 </button>
-                {audioUrl && (
+                {currentAudioUrl && (
                   <Waveform
                     ref={waveformRef}
-                    audioUrl={audioUrl}
+                    audioUrl={currentAudioUrl}
                     isPlaying={playing}
                     onReady={setDuration}
                     onTimeUpdate={setCurrentTime}
@@ -182,15 +244,25 @@ export function VocalizedPreviewComparison({
               </button>
 
               <button
-                onClick={() => setDownloadDialogOpen(true)}
+                onClick={handleDownloadThis}
                 className="w-full sm:w-auto gradient-border-button"
+                disabled={
+                  activeVersion === "vocalized" && !getModeUrl(tab, result)
+                }
               >
                 <span className="text-professional-song font-medium">
                   Download <span className="font-bold ml-1">This</span>
                 </span>
               </button>
-
-              <button className="w-full sm:w-auto px-5 py-3 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#234C90] cursor-pointer text-white font-semibold flex items-center justify-center gap-2 hover:from-[#60A5FA] hover:to-[#3B82F6]">
+              <button
+                onClick={handleDownloadAll}
+                className="cursor-pointer w-full sm:w-auto px-5 py-3 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#234C90] text-white font-semibold flex items-center justify-center gap-2 hover:from-[#60A5FA] hover:to-[#3B82F6]"
+                disabled={
+                  !result.standard_url &&
+                  !result.dynamic_url &&
+                  !result.smooth_url
+                }
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -208,4 +280,15 @@ export function VocalizedPreviewComparison({
       </DialogContent>
     </Dialog>
   );
+}
+
+function getModeUrl(mode: Mode, r: ResultUrls): string | undefined {
+  switch (mode) {
+    case "Standard":
+      return r.standard_url ?? undefined;
+    case "Dynamic":
+      return r.dynamic_url ?? undefined;
+    case "Smooth":
+      return r.smooth_url ?? undefined;
+  }
 }

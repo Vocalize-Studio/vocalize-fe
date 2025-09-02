@@ -27,31 +27,28 @@ export type RegisterRequest = z.infer<typeof registerSchema>;
 
 export const forgotPasswordSchema = z
   .object({
-    email: z
-      .string()
-      .email("Email tidak valid")
-      .min(1, "Email tidak boleh kosong"),
+    email: z.string().email("Invalid email").min(1, "Email cannot be empty"),
     otp: z
       .string()
       .optional()
       .refine((val) => !val || val.length === 4, {
-        message: "Kode OTP harus 4 digit",
+        message: "OTP code must be 4 digits",
       }),
     password: z
       .string()
       .optional()
       .refine((val) => !val || val.length >= 8, {
-        message: "Password minimal 8 karakter",
+        message: "Password must be at least 8 characters",
       }),
     confirmPassword: z
       .string()
       .optional()
       .refine((val) => !val || val.length >= 8, {
-        message: "Konfirmasi password minimal 8 karakter",
+        message: "Confirm password must be at least 8 characters",
       }),
   })
   .refine((data) => !data.password || data.password === data.confirmPassword, {
-    message: "Password dan konfirmasi tidak cocok",
+    message: "Password and confirmation do not match",
     path: ["confirmPassword"],
   });
 
