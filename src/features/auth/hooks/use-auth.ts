@@ -3,14 +3,11 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { LoginRequest, RegisterRequest } from "../schema/auth";
 import { login, logout, register } from "../services/auth";
-import { useUserStore } from "@/store/user";
 
 export const useLogin = () => {
-  const setUser = useUserStore((state) => state.setUser);
   return useMutation({
     mutationFn: (payload: LoginRequest) => login(payload),
-    onSuccess: (data) => {
-      setUser(data.user);
+    onSuccess: () => {
       toast.success("Login successful", {
         description: "Welcome back!",
       });
@@ -43,12 +40,10 @@ export const useRegister = () => {
 
 export const useLogout = () => {
   const router = useRouter();
-  const clearUser = useUserStore((s) => s.logout);
 
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      clearUser();
       toast.success("Logout successful", {
         description: "You have been logged out.",
       });

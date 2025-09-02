@@ -47,3 +47,5 @@ export const vocalizerSchema = z.object({
 });
 
 export type VocalizerRequest = z.infer<typeof vocalizerSchema>;
+
+export type UploadPayload = VocalizerRequest & { user_id: string | number };

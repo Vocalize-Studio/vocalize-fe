@@ -5,12 +5,17 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',      
-        hostname: 'i.pravatar.cc',
-        port: '',               
-        pathname: '/**',        
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+        port: "",
+        pathname: "/**",
       },
     ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "200mb",
+    },
   },
 };
 

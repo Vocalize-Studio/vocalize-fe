@@ -3,11 +3,13 @@ import Image from "next/image";
 import VocalizerForm from "@/features/vocalizer/components/vocalizer-form";
 import { vocalizerFeatures } from "@/features/vocalizer/constants/vocalizer";
 import FeaturedCard from "./featured-card";
+import { getSessionUser } from "@/lib/sessions";
 
-export default function VocalizeHeroSection() {
+export default async function VocalizeHeroSection() {
+  const user = await getSessionUser();
   return (
     <section
-      className="min-h-screen relative overflow-hidden  flex items-center justify-center"
+      className="min-h-screen relative overflow-hidden flex items-center justify-center"
       id="vocalize"
     >
       <Image
@@ -48,7 +50,7 @@ export default function VocalizeHeroSection() {
                 </span>
               </p>
             </div>
-            <VocalizerForm />
+            <VocalizerForm userId={user?.id ?? null} />
           </div>
         </div>
         <VocalizerFeatureList />
