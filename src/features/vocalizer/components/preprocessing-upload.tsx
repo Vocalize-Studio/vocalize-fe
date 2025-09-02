@@ -7,17 +7,14 @@ import {
 } from "@/components/ui/dialog";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { JobStatus } from "../services/job-service";
 
 type PreprocessingUploadProps = {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onCompleted: () => void;
   fileName?: string;
-  startAt?: number;
-  tickMs?: number;
-  steps?: string[];
-  thresholds?: number[];
+  progress?: number | null;
+  status?: JobStatus;
+  onOpenChange?: (open: boolean) => void;
 };
 
 const STEPS = [
@@ -33,58 +30,31 @@ function buildThresholds(stepsLen: number) {
   return Array.from({ length: stepsLen }, (_, i) => Math.round((i + 1) * each));
 }
 
-function getStepTitle(progress: number, steps: string[], thresholds: number[]) {
-  const idx = thresholds.findIndex((t) => progress <= t);
-  return steps[Math.max(0, idx === -1 ? steps.length - 1 : idx)];
+function getStepTitle(progress: number | null | undefined, status?: JobStatus) {
+  if (status === "failed") return "Processing failed";
+  if (status === "completed") return "Completed";
+
+  const thresholds = buildThresholds(STEPS.length);
+  const p =
+    typeof progress === "number" ? Math.max(0, Math.min(100, progress)) : 0;
+  const idx = thresholds.findIndex((t) => p <= t);
+  return STEPS[Math.max(0, idx === -1 ? STEPS.length - 1 : idx)];
 }
 
 export default function PreprocessingUpload({
   open,
   onOpenChange,
-  onCompleted,
   fileName,
-  startAt = 10,
-  tickMs = 50,
-  steps = STEPS,
-  thresholds,
+  progress,
+  status,
 }: PreprocessingUploadProps) {
-  const [progress, setProgress] = useState(startAt);
-  const timerRef = useRef<number | null>(null);
+  const pct = useMemo(() => {
+    if (status === "completed") return 100;
+    if (typeof progress !== "number" || Number.isNaN(progress)) return null;
+    return Math.max(0, Math.min(100, Math.round(progress)));
+  }, [progress, status]);
 
-  // thresholds default (bagi rata) jika tidak diberikan
-  const limits = useMemo(
-    () => thresholds ?? buildThresholds(steps.length),
-    [thresholds, steps.length]
-  );
-  const title = getStepTitle(progress, steps, limits);
-
-  // start/stop interval berdasar "open"
-  useEffect(() => {
-    if (!open) return;
-
-    setProgress(startAt);
-
-    timerRef.current = window.setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + 1;
-        if (next >= 100) {
-          if (timerRef.current) window.clearInterval(timerRef.current);
-          timerRef.current = null;
-          // beri jeda kecil utk UX sebelum close & callback
-          setTimeout(() => onCompleted(), 400);
-          return 100;
-        }
-        return next;
-      });
-    }, tickMs);
-
-    return () => {
-      if (timerRef.current) {
-        window.clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [open, startAt, tickMs, onCompleted]);
+  const title = getStepTitle(pct ?? 0, status);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -92,10 +62,10 @@ export default function PreprocessingUpload({
         <div className="flex items-center justify-start">
           <div className="grid grid-cols-[auto_1fr] items-center gap-4">
             <div className="relative w-[clamp(2.5rem,5vw,3.5rem)] h-[clamp(2.5rem,5vw,3.5rem)]">
-              <ProgressRing value={progress} />
-              <div className="absolute inset-0 flex items-center justify-center font-semibold text-white text-[clamp(0.6rem,1.2vw,1rem)]">
+              <ProgressRing value={pct} />
+              {/* <div className="absolute inset-0 flex items-center justify-center font-semibold text-white text-[clamp(0.6rem,1.2vw,1rem)]">
                 {progress}%
-              </div>
+              </div> */}
             </div>
 
             <DialogHeader className="text-left leading-tight">
@@ -137,7 +107,25 @@ export default function PreprocessingUpload({
   );
 }
 
-function ProgressRing({ value }: { value: number }) {
+function ProgressRing({ value }: { value: number | null }) {
+  if (value == null) {
+    return (
+      <div className="relative w-full h-full grid place-items-center">
+        <div className="w-full h-full animate-spin">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+            <path
+              className="text-[#3B82F6]"
+              stroke="currentColor"
+              strokeWidth="3"
+              fill="none"
+              strokeDasharray="60 200"
+              d="M18 2a16 16 0 1 1 0 32 16 16 0 0 1 0-32"
+            />
+          </svg>
+        </div>
+      </div>
+    );
+  }
   const CIRC = 100.53;
   const dashoffset = CIRC - (value / 100) * CIRC;
 
@@ -162,7 +150,7 @@ function ProgressRing({ value }: { value: number }) {
         />
       </svg>
       <div className="absolute inset-0 grid place-items-center font-semibold text-white text-[clamp(0.6rem,1.2vw,1rem)]">
-        {Math.min(100, Math.max(0, Math.round(value)))}%
+        {value}%
       </div>
     </div>
   );

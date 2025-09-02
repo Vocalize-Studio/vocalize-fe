@@ -12,6 +12,7 @@ import { useAuthStep } from "../hooks/use-auth-step";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
+import { DialogContent } from "@/components/ui/dialog";
 
 interface ForgotPasswordContentProps {
   onBackToLogin: () => void;
@@ -26,8 +27,7 @@ export default function ForgotPasswordForm({
     mode: "onTouched",
   });
 
-  const stepRef = useRef(null);
-
+  const stepRef = useRef<HTMLDivElement | null>(null);
   const { currentIndex, goToNext } = useAuthStep(4);
 
   const steps = [
@@ -43,15 +43,11 @@ export default function ForgotPasswordForm({
 
   useGSAP(
     () => {
+      if (!stepRef.current) return;
       gsap.fromTo(
         stepRef.current,
-        { x: 100, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.4,
-          ease: "power2.out",
-        }
+        { x: 80, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.4, ease: "power2.out" }
       );
     },
     { dependencies: [currentIndex], scope: stepRef }
@@ -59,21 +55,23 @@ export default function ForgotPasswordForm({
 
   return (
     <FormProvider {...methods}>
-      <div ref={stepRef} className="space-y-4">
-        {steps[currentIndex]}
+      <div className="mx-auto w-full max-w-[420px] px-5">
+        <div ref={stepRef} className="w-full">
+          {steps[currentIndex]}
+        </div>
+        <StepIndicator total={steps.length} current={currentIndex} />
       </div>
-      <StepIndicator total={steps.length} current={currentIndex} />
     </FormProvider>
   );
 }
 
 function StepIndicator({ total, current }: { total: number; current: number }) {
   return (
-    <div className="flex items-center justify-center gap-4 my-8">
+    <div className="flex items-center justify-center gap-3 sm:gap-4 my-6 sm:my-8">
       {[...Array(total)].map((_, idx) => (
         <div
           key={idx}
-          className={`h-2 w-18 rounded-full transition-colors ${
+          className={`h-2 w-[68px] md:w-[72px] rounded-full transition-colors ${
             idx === current ? "bg-[#3B82F6]" : "bg-[#4b4b4b]/60"
           }`}
         />

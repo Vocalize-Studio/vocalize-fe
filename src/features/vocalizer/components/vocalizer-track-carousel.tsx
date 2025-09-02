@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   Carousel,
+  CarouselApi,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
@@ -32,6 +33,12 @@ export default function VocalizerTrackCarousel({
   setApi,
   isPlaying,
 }: VocalizerTrackCarouselProps) {
+  const apiRef = useRef<CarouselApi | null>(null);
+
+  const handleSetApi = (api: CarouselApi) => {
+    apiRef.current = api;
+    setApi(api);
+  };
   return (
     <>
       <Carousel
@@ -39,7 +46,7 @@ export default function VocalizerTrackCarousel({
           align: "center",
           loop: true,
         }}
-        setApi={setApi}
+        setApi={handleSetApi}
         className="w-full mx-auto max-w-6xl overflow-hidden"
       >
         <CarouselContent className="-ml-2 md:-ml-4">
@@ -97,6 +104,14 @@ export default function VocalizerTrackCarousel({
           })}
         </CarouselContent>
       </Carousel>
+      <button
+        className="hidden md:block absolute left-0 top-0 h-full w-[12%] lg:w-[15%] z-30 cursor-pointer"
+        onClick={() => apiRef.current?.scrollPrev()}
+      />
+      <button
+        className="hidden md:block absolute right-0 top-0 h-full w-[12%] lg:w-[15%] z-30 cursor-pointer"
+        onClick={() => apiRef.current?.scrollNext()}
+      />
     </>
   );
 }

@@ -1,6 +1,6 @@
+import AiPoweredSongSection from "@/components/ai-powered-song-section";
 import AudioComparisonSection from "@/components/audio-comparison-section";
 import ContactInformationSection from "@/components/contact-information";
-import CtaSection from "@/components/cta-section";
 import { Footer } from "@/components/footer";
 import { PricingSection } from "@/components/pricing-section";
 import ProfessionalSongSection from "@/components/professional-song-section";
@@ -15,7 +15,7 @@ export default function Home() {
       <AudioComparisonSection />
       <ProfessionalSongSection />
       <TestimonialSection />
-      <CtaSection />
+      <AiPoweredSongSection />
       <WhyVocalizeSection />
       <PricingSection />
       <ContactInformationSection />
