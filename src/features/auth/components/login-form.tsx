@@ -28,10 +28,9 @@ import { useLogin } from "../hooks/use-auth";
 
 interface LoginFormProps {
   onForgot: () => void;
-  onClose: () => void;
 }
 
-export default function LoginForm({ onForgot, onClose }: LoginFormProps) {
+export default function LoginForm({ onForgot }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -65,6 +64,20 @@ export default function LoginForm({ onForgot, onClose }: LoginFormProps) {
           type="button"
           variant="ghost"
           className="flex items-center justify-center hover:bg-white/80 bg-white rounded-full w-full h-12 px-4"
+          onClick={async () => {
+            try {
+              const res = await fetch("/api/google");
+              const data = await res.json();
+
+              if (data?.success && data?.data?.auth_url) {
+                window.location.href = data.data.auth_url;
+              } else {
+                console.error("Invalid payload:", data);
+              }
+            } catch (err) {
+              console.error("Error fetching Google OAuth URL:", err);
+            }
+          }}
         >
           <Image src={googleIcon} alt="google-icon" />
           <span className="font-montserrat text-sm text-[#929292] font-semibold -translate-x-1/6 cursor-pointer">

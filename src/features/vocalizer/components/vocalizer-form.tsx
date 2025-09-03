@@ -10,15 +10,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { VocalizerRequest, vocalizerSchema } from "../schema/vocalizer";
+import {
+  UploadPayload,
+  VocalizerRequest,
+  vocalizerSchema,
+} from "../schema/vocalizer";
 import { useForm } from "react-hook-form";
 import { VocalizedPreviewComparison } from "./vocalizer-preview-comparison";
 import PreprocessingUpload from "./preprocessing-upload";
 import { useUploadFile } from "../hooks/use-upload-file";
+import { toast } from "sonner";
+import { useJobStatus } from "../hooks/use-job-status";
+import { useLoginDialogStore } from "@/store/login-dialog-store";
 
-export default function VocalizerForm() {
+export default function VocalizerForm({ userId }: { userId: number | null }) {
   const form = useForm<VocalizerRequest>({
     resolver: zodResolver(vocalizerSchema),
     defaultValues: {
@@ -28,11 +35,11 @@ export default function VocalizerForm() {
     },
     mode: "onChange",
   });
+  console.log(userId);
 
   const { isValid } = form.formState;
 
   const dragAndDropRef = useRef<HTMLInputElement>(null);
-  const ref = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const referenceRef = useRef<HTMLInputElement>(null);
 
@@ -43,7 +50,13 @@ export default function VocalizerForm() {
   const [vocalizeRequest, setVocalizeRequest] =
     useState<VocalizerRequest | null>(null);
 
-  const { mutate: uploadFile } = useUploadFile();
+  const [jobId, setJobId] = useState<string | null>(null);
+
+  const { mutateAsync: uploadFile, isPending } = useUploadFile();
+  const { open } = useLoginDialogStore();
+
+  const job = useJobStatus(jobId);
+  // const status = "completed";
 
   function simulateUpload(file: File) {
     setUploadProgress(0);
@@ -59,14 +72,6 @@ export default function VocalizerForm() {
         }
       });
     }, 100);
-  }
-
-  function cancelUpload() {
-    setUploadedFile(null);
-    setUploadProgress(null);
-    if (ref.current) {
-      ref.current.value = "";
-    }
   }
 
   function resetAllUI() {
@@ -85,16 +90,29 @@ export default function VocalizerForm() {
   }
 
   async function onSubmit(values: VocalizerRequest) {
-    const valid = await form.trigger();
-    if (!valid) return;
+    if (!userId) {
+      toast.error("Please login first");
+      open("login");
+      return;
+    }
 
-    setVocalizeRequest(values);
+    const payload: UploadPayload = { ...values, user_id: userId };
 
-    setIsUploading(true);
+    const res = await uploadFile(payload);
+    const mlJobId = res?.data?.job_id ?? null;
+    setJobId(mlJobId);
+
     resetAllUI();
 
-    await uploadFile(values);
+    setIsUploading(true);
   }
+
+  // useEffect(() => {
+  //   if (isUploading && status === "completed") {
+  //     setShowPreview(true);
+  //     setIsUploading(false);
+  //   }
+  // }, [status, isUploading]);
 
   return (
     <div className="space-y-4 mt-4 px-4 sm:px-0">
@@ -386,10 +404,11 @@ export default function VocalizerForm() {
 
           <div className="flex justify-center lg:justify-start">
             <Button
+              disabled={isPending}
               type="submit"
               className={`group w-full font-semibold px-4 py-5 text-lg mt-6 max-w-xl relative hover-lift cursor-pointer border-2
                 ${
-                  isValid
+                  isValid && !isPending
                     ? "bg-blue-500 text-white hover:bg-blue-600 border-[#C2D8FC]"
                     : "bg-white text-gray-400 hover:bg-blue-50 border-[#c2d8fc]"
                 }
@@ -397,17 +416,20 @@ export default function VocalizerForm() {
             >
               <span
                 className={`relative font-montserrat ${
-                  isValid ? "text-white" : "button-vocalize btn-glow"
+                  isValid && !isPending
+                    ? "text-white"
+                    : "button-vocalize btn-glow"
                 }`}
               >
-                Vocalize
-                <span
-                  className={`inline-block text-sm align-super -translate-y-[0.05em] 
-              opacity-0 group-hover:opacity-100 transition duration-100
-              ${isValid ? "text-white" : "text-blue-500"} leading-none`}
-                >
-                  {"\u2728\uFE0E"}
-                </span>
+                {isPending ? "Uploading..." : "Vocalize"}
+                {!isPending && (
+                  <span
+                    className={`inline-block text-sm align-super -translate-y-[0.05em] opacity-0 group-hover:opacity-100 transition duration-100
+                      ${isValid ? "text-white" : "text-blue-500"} leading-none`}
+                  >
+                    {"\u2728\uFE0E"}
+                  </span>
+                )}
               </span>
             </Button>
           </div>
@@ -415,26 +437,23 @@ export default function VocalizerForm() {
       </Form>
 
       <PreprocessingUpload
-        open={isUploading}
-        onOpenChange={(open) => {
-          setIsUploading(open);
-        }}
-        onCompleted={() => {
-          setIsUploading(false);
-          setShowPreview(true);
-        }}
+        open={isUploading && job.data?.data?.status !== "completed"}
         fileName={uploadedFile?.name}
+        progress={job.data?.data?.progress ?? (job.isLoading ? null : 100)}
+        status={job.data?.data?.status}
       />
 
-      {showPreview && vocalizeRequest && (
+      {job.data?.data?.status === "completed" && (
         <VocalizedPreviewComparison
-          isVisible={showPreview}
+          isVisible
           onClose={() => setShowPreview(false)}
-          uploadedFile={
-            vocalizeRequest.vocal_audio instanceof File
-              ? vocalizeRequest.vocal_audio
-              : null
-          }
+          uploadedFile={uploadedFile}
+          result={{
+            result_uri: job.data.data.result_uri,
+            standard_url: job.data.data.metadata?.standard_url,
+            smooth_url: job.data.data.metadata?.smooth_url,
+            dynamic_url: job.data.data.metadata?.dynamic_url,
+          }}
         />
       )}
     </div>
