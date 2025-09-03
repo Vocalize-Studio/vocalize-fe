@@ -1,8 +1,7 @@
-// src/app/api/google/route.ts
 export const runtime = "nodejs";
 
 export async function GET() {
-  const base = process.env.BACKEND_API_URL?.replace(/\/$/, "");
+  const base = process.env.NEXT_API_URL?.replace(/\/$/, "");
   if (!base) return new Response("BACKEND_API_URL not set", { status: 500 });
 
   const r = await fetch(
@@ -14,6 +13,8 @@ export async function GET() {
       },
     }
   );
+
+  console.log(r);
 
   const ct = r.headers.get("content-type") || "";
   const rawText = await r.text();

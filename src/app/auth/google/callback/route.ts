@@ -3,11 +3,25 @@ import { cookies } from "next/headers";
 
 export const runtime = "nodejs";
 
-const BE_BASE = process.env.BACKEND_API_URL?.replace(/\/$/, "");
+const BE_BASE = process.env.NEXT_API_URL?.replace(/\/$/, "");
+
+function getRedirectUri(req: NextRequest): string {
+  if (process.env.GOOGLE_REDIRECT_URI) {
+    return process.env.GOOGLE_REDIRECT_URI;
+  }
+
+  const host = req.headers.get("host");
+  const protocol =
+    req.headers.get("x-forwarded-proto") ||
+    (req.url.startsWith("https") ? "https" : "http");
+
+  return `${protocol}://${host}/auth/google/callback`;
+}
 
 export async function GET(req: NextRequest) {
-  if (!BE_BASE)
+  if (!BE_BASE) {
     return new NextResponse("BACKEND_API_URL not set", { status: 500 });
+  }
 
   const code = req.nextUrl.searchParams.get("code");
   const state = req.nextUrl.searchParams.get("state");
@@ -16,42 +30,57 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL("/?auth=missing", req.url));
   }
 
-  const r = await fetch(
-    `${BE_BASE}/api/v1/auth/google/callback?code=${encodeURIComponent(
-      code
-    )}&state=${encodeURIComponent(state)}`,
-    { method: "GET", headers: { Accept: "application/json" } }
-  );
+  const redirectUri = getRedirectUri(req);
+
+  console.log(`Using redirect URI: ${redirectUri}`);
+
+  const url =
+    `${BE_BASE}/api/v1/auth/google/callback?` +
+    `code=${encodeURIComponent(code)}` +
+    `&state=${encodeURIComponent(state)}` +
+    `&redirect_uri=${encodeURIComponent(redirectUri)}`;
+
+  const r = await fetch(url, {
+    method: "GET",
+    headers: { Accept: "application/json" },
+  });
+
+  const ct = r.headers.get("content-type") || "";
+  const raw = await r.text();
 
   if (!r.ok) {
-    return NextResponse.redirect(new URL("/?auth=failed", req.url));
+    console.error("BE /callback error:", r.status, raw);
+    return NextResponse.redirect(new URL(`/?auth=failed#${r.status}`, req.url));
   }
 
-  const payload = (await r.json().catch(() => ({}))) as {
-    access_token?: string;
-    refresh_token?: string;
-    expires_in?: number;
-    return_to?: string;
-  };
+  const payload = ct.includes("application/json") ? JSON.parse(raw) : {};
+  const data = payload?.data || payload;
+  const {
+    access_token,
+    refresh_token,
+    expires_in = 15 * 60,
+    return_to = "/",
+  } = data;
 
-  const access = payload.access_token;
-  const refresh = payload.refresh_token;
-  const exp = Math.max(1, Math.floor(payload.expires_in ?? 15 * 60));
+  if (!access_token || !refresh_token) {
+    return NextResponse.redirect(new URL("/?auth=failed#no-tokens", req.url));
+  }
 
-  const jar = await cookies();
-  jar.set("access_token", access ?? "", {
+  const cookieStore = await cookies();
+
+  cookieStore.set("token", access_token, {
     httpOnly: true,
-    sameSite: "lax",
+    secure: true,
     path: "/",
-    maxAge: exp,
+    maxAge: expires_in ?? 60 * 60 * 24,
   });
-  jar.set("refresh_token", refresh ?? "", {
+
+  cookieStore.set("refresh_token", refresh_token, {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 30,
   });
 
-  const dest = payload.return_to || "/";
-  return NextResponse.redirect(new URL(dest, req.url));
+  return NextResponse.redirect(new URL(return_to, req.url));
 }

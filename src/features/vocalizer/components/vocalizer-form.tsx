@@ -56,7 +56,6 @@ export default function VocalizerForm({ userId }: { userId: number | null }) {
   const { open } = useLoginDialogStore();
 
   const job = useJobStatus(jobId);
-  console.log(job);
   // const status = "completed";
 
   function simulateUpload(file: File) {
