@@ -3,12 +3,24 @@ import { DialogClose, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import goalLogo from "../../../../public/goal.svg";
+import {
+  useLoginDialogStore,
+  useRegisterDialogStore,
+} from "@/store/auth-dialog-store";
 
 export default function StepDoneForm({
   onBackToLogin,
 }: {
   onBackToLogin: () => void;
 }) {
+  const { open: openRegister } = useRegisterDialogStore();
+  const { close: closeLogin } = useLoginDialogStore();
+
+  const handleGoToRegister = () => {
+    closeLogin();
+    openRegister();
+  };
+
   return (
     <div className="w-full space-y-4 flex-col items-center justify-center px-5">
       <DialogHeader className="mt-10">
@@ -39,7 +51,10 @@ export default function StepDoneForm({
       >
         Return to Log In
       </p>
-      <p className="text-[#f4f4f4] text-xs md:text-sm text-center cursor-pointer mt-2">
+      <p
+        onClick={handleGoToRegister}
+        className="text-[#f4f4f4] text-xs md:text-sm text-center cursor-pointer mt-2"
+      >
         Don’t have an account yet?{" "}
         <span className="text-[#3B82F6]">Sign Up for Free</span>
       </p>

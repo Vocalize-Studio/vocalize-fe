@@ -28,6 +28,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "../schema/auth";
 import { useRegister } from "../hooks/use-auth";
+import {
+  useLoginDialogStore,
+  useRegisterDialogStore,
+} from "@/store/auth-dialog-store";
 
 interface RegisterFormProps {
   isScrolled: boolean;
@@ -35,7 +39,6 @@ interface RegisterFormProps {
 
 export default function RegisterForm({ isScrolled }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -48,18 +51,26 @@ export default function RegisterForm({ isScrolled }: RegisterFormProps) {
 
   const { mutateAsync: register, isPending } = useRegister();
 
+  const { isOpen, open, close } = useRegisterDialogStore();
+  const { open: openLogin } = useLoginDialogStore();
+
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
     try {
       await register({ ...values, role: values.role ?? "user" });
       form.reset();
-      setIsDialogOpen(false);
+      close();
     } catch (_) {}
+  };
+
+  const handleDialog = () => {
+    close();
+    openLogin();
   };
 
   console.log(register);
 
   return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <Dialog open={isOpen} onOpenChange={(o) => (o ? open() : close())}>
       <div className="w-full">
         <DialogTrigger asChild>
           <Button
@@ -80,7 +91,10 @@ export default function RegisterForm({ isScrolled }: RegisterFormProps) {
           <DialogTitle className="text-[#f4f4f4] text-center font-montserrat font-semibold text-4xl">
             Sign Up for FREE
           </DialogTitle>
-          <DialogDescription className="text-center text-[#f4f4f4] font-montserrat font-normal text-sm mt-2">
+          <DialogDescription
+            onClick={handleDialog}
+            className="text-center text-[#f4f4f4] font-montserrat font-normal text-sm mt-2"
+          >
             Already have an account?{" "}
             <span className="text-[#3B82F6] font-bold cursor-pointer">
               Log in

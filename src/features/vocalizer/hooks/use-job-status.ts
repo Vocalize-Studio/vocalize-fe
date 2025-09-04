@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { getJobStatus } from "../services/job-service";
 
+import type { JobResponse } from "../services/job-service";
+
 export function useJobStatus(jobId: string | null) {
-  return useQuery({
+  return useQuery<JobResponse>({
     queryKey: ["ml-job", jobId],
     enabled: !!jobId,
-    queryFn: () => getJobStatus(jobId),
-    refetchInterval: (query) => {
-      const status = query.state.data?.data.status;
-      if (status === "completed" || status === "failed") return false;
-      return 1500;
-    },
+    queryFn: () => getJobStatus(jobId!),
+    refetchInterval: (query) =>
+      query.state.data?.data.status === "completed" ? false : 3000,
   });
 }
+// query.state.data?.data.status;

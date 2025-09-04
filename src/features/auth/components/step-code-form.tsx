@@ -10,6 +10,10 @@ import {
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
+import {
+  useLoginDialogStore,
+  useRegisterDialogStore,
+} from "@/store/auth-dialog-store";
 
 export default function StepCodeForm({
   next,
@@ -54,6 +58,14 @@ export default function StepCodeForm({
     if (e.key === "Backspace" && !getValues("otp")[index] && index > 0) {
       inputRefs[index - 1].current?.focus();
     }
+  };
+
+  const { open: openRegister } = useRegisterDialogStore();
+  const { close: closeLogin } = useLoginDialogStore();
+
+  const handleGoToRegister = () => {
+    closeLogin();
+    openRegister();
   };
 
   return (
@@ -142,7 +154,10 @@ export default function StepCodeForm({
         >
           Return to Log In
         </p>
-        <p className="text-[#f4f4f4] text-xs md:text-sm text-center cursor-pointer mt-2">
+        <p
+          onClick={handleGoToRegister}
+          className="text-[#f4f4f4] text-xs md:text-sm text-center cursor-pointer mt-2"
+        >
           Don’t have an account yet?{" "}
           <span className="text-[#3B82F6]">Sign Up for Free</span>
         </p>
