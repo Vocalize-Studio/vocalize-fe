@@ -11,6 +11,10 @@ import {
 } from "@/components/ui/form";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import {
+  useLoginDialogStore,
+  useRegisterDialogStore,
+} from "@/store/auth-dialog-store";
 
 export default function StepEmailForm({
   next,
@@ -23,6 +27,14 @@ export default function StepEmailForm({
 
   const onSubmit = (data: any) => {
     next();
+  };
+
+  const { open: openRegister } = useRegisterDialogStore();
+  const { close: closeLogin } = useLoginDialogStore();
+
+  const handleGoToRegister = () => {
+    closeLogin();
+    openRegister();
   };
 
   return (
@@ -102,7 +114,10 @@ export default function StepEmailForm({
           >
             Return to Log In
           </p>
-          <p className="text-[#f4f4f4] text-xs md:text-sm text-center cursor-pointer mt-2">
+          <p
+            onClick={handleGoToRegister}
+            className="text-[#f4f4f4] text-xs md:text-sm text-center cursor-pointer mt-2"
+          >
             Don’t have an account yet?{" "}
             <span className="text-[#3B82F6]">Sign Up for Free</span>
           </p>

@@ -18,7 +18,6 @@ type ResultUrls = {
   standard_url?: string | null;
   dynamic_url?: string | null;
   smooth_url?: string | null;
-  result_uri?: string | null;
 };
 
 const TABS = ["Standard", "Dynamic", "Smooth"] as const;
@@ -89,7 +88,7 @@ export function VocalizedPreviewComparison({
       a.click();
       return;
     } else {
-      url = getModeUrl(tab, result) ?? result.result_uri ?? undefined;
+      url = getModeUrl(tab, result) ?? undefined;
     }
     if (!url) return;
     const a = document.createElement("a");
@@ -125,7 +124,6 @@ export function VocalizedPreviewComparison({
       }}
     >
       <DialogContent
-        onInteractOutside={(e) => e.preventDefault()}
         className="sm:max-w-5xl w-full p-0 border-none rounded-lg bg-[#1A1A1A] text-white font-montserrat
     max-h-[88vh] overflow-y-auto sm:max-h-none  sm:overflow-visible scrollbar-hide"
       >
