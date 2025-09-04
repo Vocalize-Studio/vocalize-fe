@@ -32,7 +32,7 @@ function buildThresholds(stepsLen: number) {
 
 function getStepTitle(progress: number | null | undefined, status?: JobStatus) {
   if (status === "failed") return "Processing failed";
-  if (status === "completed") return "Completed";
+  if (status === "completed") return "completed";
 
   const thresholds = buildThresholds(STEPS.length);
   const p =
@@ -50,12 +50,16 @@ export default function PreprocessingUpload({
 }: PreprocessingUploadProps) {
   const pct = useMemo(() => {
     if (status === "completed") return 100;
-    if (typeof progress !== "number" || Number.isNaN(progress)) return null;
-    return Math.max(0, Math.min(100, Math.round(progress)));
+
+    const p = Number(progress);
+    if (!Number.isFinite(p)) return null;
+
+    return Math.max(0, Math.min(100, Math.round(p)));
   }, [progress, status]);
-
   const title = getStepTitle(pct ?? 0, status);
-
+  console.log("ini progress : ", progress);
+  console.log("ini status : ", status);
+  console.log("ini filename : ", fileName);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full sm:max-w-4xl bg-[#252525] text-white border-none rounded-3xl overflow-visible">

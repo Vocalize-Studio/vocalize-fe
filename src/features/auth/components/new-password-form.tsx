@@ -12,6 +12,10 @@ import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  useLoginDialogStore,
+  useRegisterDialogStore,
+} from "@/store/auth-dialog-store";
 
 export default function StepNewPasswordForm({
   next,
@@ -25,6 +29,14 @@ export default function StepNewPasswordForm({
   const { control, handleSubmit } = useFormContext();
 
   const onSubmit = () => next();
+
+  const { open: openRegister } = useRegisterDialogStore();
+  const { close: closeLogin } = useLoginDialogStore();
+
+  const handleGoToRegister = () => {
+    closeLogin();
+    openRegister();
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full">
@@ -142,7 +154,10 @@ export default function StepNewPasswordForm({
         >
           Return to Log In
         </p>
-        <p className="text-[#f4f4f4] text-xs md:text-sm text-center cursor-pointer">
+        <p
+          onClick={handleGoToRegister}
+          className="text-[#f4f4f4] text-xs md:text-sm text-center cursor-pointer"
+        >
           Don’t have an account yet?{" "}
           <span className="text-[#3B82F6]">Sign Up for Free</span>
         </p>

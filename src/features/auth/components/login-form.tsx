@@ -25,6 +25,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../schema/auth";
 import { z } from "zod";
 import { useLogin } from "../hooks/use-auth";
+import {
+  useLoginDialogStore,
+  useRegisterDialogStore,
+} from "@/store/auth-dialog-store";
 
 interface LoginFormProps {
   onForgot: () => void;
@@ -40,9 +44,20 @@ export default function LoginForm({ onForgot }: LoginFormProps) {
 
   const { mutate: login, isPending } = useLogin();
 
+  const { isOpen, open, close } = useLoginDialogStore();
+  const { open: openRegister } = useRegisterDialogStore();
+
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-    login(values);
-    form.reset();
+    try {
+      await login(values);
+      form.reset();
+      close();
+    } catch (_) {}
+  };
+
+  const handleDialog = () => {
+    close();
+    openRegister();
   };
 
   return (
@@ -54,7 +69,10 @@ export default function LoginForm({ onForgot }: LoginFormProps) {
           </DialogTitle>
           <DialogDescription className="text-center text-[#f4f4f4] font-montserrat text-sm mt-1">
             Don’t have an account yet?{" "}
-            <span className="text-[#3B82F6] font-bold cursor-pointer">
+            <span
+              onClick={handleDialog}
+              className="text-[#3B82F6] font-bold cursor-pointer"
+            >
               Sign Up Free
             </span>
           </DialogDescription>

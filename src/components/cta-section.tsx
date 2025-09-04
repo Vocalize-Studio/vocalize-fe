@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "./ui/button";
-import { useLoginDialogStore } from "@/store/login-dialog-store";
+import { useLoginDialogStore } from "@/store/auth-dialog-store";
 import { useRouter } from "next/navigation";
 
 export function CtaSection({ isLoggedIn }: { isLoggedIn: boolean }) {
