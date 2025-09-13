@@ -12,4 +12,3 @@ export function useJobStatus(jobId: string | null) {
       query.state.data?.data.status === "completed" ? false : 3000,
   });
 }
-// query.state.data?.data.status;

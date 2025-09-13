@@ -5,10 +5,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { User } from "lucide-react";
 import LoginForm from "./login-form";
 import ForgotPasswordForm from "./forgot-password-form";
-import {
-  useForgotPasswordDialogStore,
-  useLoginDialogStore,
-} from "@/store/auth-dialog-store";
+import { useLoginDialogStore } from "@/store/auth-dialog-store";
 
 export default function LoginDialog({ isScrolled }: { isScrolled: boolean }) {
   const { isOpen, mode, open, close, setMode } = useLoginDialogStore();

@@ -64,7 +64,7 @@ export default function PreprocessingUpload({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full sm:max-w-4xl bg-[#252525] text-white border-none rounded-3xl overflow-visible">
         <div className="flex items-center justify-start">
-          <div className="grid grid-cols-[auto_1fr] items-center gap-4">
+          <div className="grid grid-cols-[auto_1fr] items-center gap-3">
             <div className="relative w-[clamp(2.5rem,5vw,3.5rem)] h-[clamp(2.5rem,5vw,3.5rem)]">
               <ProgressRing value={pct} />
               {/* <div className="absolute inset-0 flex items-center justify-center font-semibold text-white text-[clamp(0.6rem,1.2vw,1rem)]">
@@ -72,7 +72,7 @@ export default function PreprocessingUpload({
               </div> */}
             </div>
 
-            <DialogHeader className="text-left leading-tight">
+            <DialogHeader className="text-left leading-px">
               <DialogTitle className="text-[#f4f4f4] text-sm sm:text-base md:text-lg font-semibold font-montserrat">
                 {title}
               </DialogTitle>
