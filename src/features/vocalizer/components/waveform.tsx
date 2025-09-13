@@ -36,7 +36,13 @@ const Waveform = forwardRef<WaveformHandle, Props>(
         barHeight: 50,
         barRadius: 50,
         barWidth: 3,
+        backend: "MediaElement",
       });
+
+      const mediaEl = wavesurferRef.current.getMediaElement();
+      if (mediaEl) {
+        mediaEl.crossOrigin = "anonymous";
+      }
 
       wavesurferRef.current.on("ready", () => {
         const duration = wavesurferRef.current!.getDuration();
@@ -48,15 +54,19 @@ const Waveform = forwardRef<WaveformHandle, Props>(
         onTimeUpdate?.(time);
       });
 
+      wavesurferRef.current.on("error", (e) => {
+        console.error("WaveSurfer error:", e);
+      });
+
       return () => {
         wavesurferRef.current?.destroy();
       };
     }, [audioUrl]);
 
     useEffect(() => {
-      const ws = wavesurferRef.current;
-      if (!ws) return;
-      isPlaying ? ws.play() : ws.pause();
+      const wavesurfer = wavesurferRef.current;
+      if (!wavesurfer) return;
+      isPlaying ? wavesurfer.play() : wavesurfer.pause();
     }, [isPlaying]);
 
     useImperativeHandle(ref, () => ({

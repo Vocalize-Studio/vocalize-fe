@@ -11,35 +11,44 @@ import StepDoneForm from "./step-done-form";
 import { useAuthStep } from "../hooks/use-auth-step";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
-import { useRef } from "react";
-import { DialogContent } from "@/components/ui/dialog";
+import { useMemo, useRef } from "react";
 
-interface ForgotPasswordContentProps {
-  onBackToLogin: () => void;
-}
+type ForgotForm = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPasswordForm({
   onBackToLogin,
-}: ForgotPasswordContentProps) {
-  const methods = useForm<z.infer<typeof forgotPasswordSchema>>({
+}: {
+  onBackToLogin: () => void;
+}) {
+  const methods = useForm<ForgotForm>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: { email: "", otp: "", password: "", confirmPassword: "" },
     mode: "onTouched",
   });
-
   const stepRef = useRef<HTMLDivElement | null>(null);
   const { currentIndex, goToNext } = useAuthStep(4);
 
-  const steps = [
-    <StepEmailForm key="email" next={goToNext} onBackToLogin={onBackToLogin} />,
-    <StepCodeForm key="code" next={goToNext} onBackToLogin={onBackToLogin} />,
-    <StepNewPasswordForm
-      key="new"
-      next={goToNext}
-      onBackToLogin={onBackToLogin}
-    />,
-    <StepDoneForm key="done" onBackToLogin={onBackToLogin} />,
-  ];
+  const steps = useMemo(
+    () => [
+      <StepEmailForm
+        key="email"
+        next={() => goToNext()}
+        onBackToLogin={onBackToLogin}
+      />,
+      <StepCodeForm
+        key="code"
+        next={() => goToNext()}
+        onBackToLogin={onBackToLogin}
+      />,
+      <StepNewPasswordForm
+        key="new"
+        next={() => goToNext()}
+        onBackToLogin={onBackToLogin}
+      />,
+      <StepDoneForm key="done" onBackToLogin={onBackToLogin} />,
+    ],
+    [onBackToLogin]
+  );
 
   useGSAP(
     () => {

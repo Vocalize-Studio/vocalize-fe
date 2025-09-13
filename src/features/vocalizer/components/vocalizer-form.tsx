@@ -75,21 +75,6 @@ export default function VocalizerForm({ userId }: { userId: number | null }) {
     }, 100);
   }
 
-  function resetAllUI() {
-    form.reset({
-      vocal_audio: "",
-      instrumental_audio: "",
-      reference_audio: "",
-    });
-
-    if (dragAndDropRef.current) dragAndDropRef.current.value = "";
-    if (fileInputRef.current) fileInputRef.current.value = "";
-    if (referenceRef.current) referenceRef.current.value = "";
-
-    setUploadedFile(null);
-    setUploadProgress(null);
-  }
-
   async function onSubmit(values: VocalizerRequest) {
     if (!userId) {
       toast.error("Please login first");
