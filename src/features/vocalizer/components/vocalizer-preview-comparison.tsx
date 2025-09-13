@@ -52,8 +52,6 @@ export function VocalizedPreviewComparison({
 
   const [duration, setDuration] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
-  const [isDownloadDialogOpen, setDownloadDialogOpen] =
-    useState<boolean>(false);
 
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
 

@@ -4,7 +4,7 @@ import type { UploadPayload } from "../schema/vocalizer";
 import { toast } from "sonner";
 
 export function useUploadFile() {
-  return useMutation({
+  return useMutation<any, any, any>({
     mutationKey: ["file-upload"],
     mutationFn: (payload: UploadPayload) => fileUpload(payload),
     onError: (error: Error) => {
