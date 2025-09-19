@@ -6,8 +6,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { JobStatus } from "../services/job-service";
+import { useMemo } from "react";
+import { JobStatus } from "../schema/job";
 
 type PreprocessingUploadProps = {
   open: boolean;
@@ -25,22 +25,6 @@ const STEPS = [
   "Finalizing...",
 ];
 
-function buildThresholds(stepsLen: number) {
-  const each = 100 / stepsLen;
-  return Array.from({ length: stepsLen }, (_, i) => Math.round((i + 1) * each));
-}
-
-function getStepTitle(progress: number | null | undefined, status?: JobStatus) {
-  if (status === "failed") return "Processing failed";
-  if (status === "completed") return "completed";
-
-  const thresholds = buildThresholds(STEPS.length);
-  const p =
-    typeof progress === "number" ? Math.max(0, Math.min(100, progress)) : 0;
-  const idx = thresholds.findIndex((t) => p <= t);
-  return STEPS[Math.max(0, idx === -1 ? STEPS.length - 1 : idx)];
-}
-
 export default function PreprocessingUpload({
   open,
   onOpenChange,
@@ -56,27 +40,25 @@ export default function PreprocessingUpload({
 
     return Math.max(0, Math.min(100, Math.round(p)));
   }, [progress, status]);
+
   const title = getStepTitle(pct ?? 0, status);
+
   console.log("ini progress : ", progress);
   console.log("ini status : ", status);
   console.log("ini filename : ", fileName);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full sm:max-w-4xl bg-[#252525] text-white border-none rounded-3xl overflow-visible">
+      <DialogContent className="w-full sm:max-w-4xl bg-[#252525] text-white border-none rounded-3xl overflow-visible p-4 sm:p-5 gap-2 sm:gap-3">
         <div className="flex items-center justify-start">
           <div className="grid grid-cols-[auto_1fr] items-center gap-3">
             <div className="relative w-[clamp(2.5rem,5vw,3.5rem)] h-[clamp(2.5rem,5vw,3.5rem)]">
               <ProgressRing value={pct} />
-              {/* <div className="absolute inset-0 flex items-center justify-center font-semibold text-white text-[clamp(0.6rem,1.2vw,1rem)]">
-                {progress}%
-              </div> */}
             </div>
-
-            <DialogHeader className="text-left leading-px">
-              <DialogTitle className="text-[#f4f4f4] text-sm sm:text-base md:text-lg font-semibold font-montserrat">
+            <DialogHeader className="text-left !space-y-0 p-0">
+              <DialogTitle className="text-[#f4f4f4] text-sm sm:text-base md:text-lg font-semibold font-montserrat leading-tight m-0">
                 {title}
               </DialogTitle>
-              <DialogDescription className="text-[#929292] text-sm sm:text-base md:text-lg font-montserrat">
+              <DialogDescription className="text-[#929292] text-xs sm:text-sm md:text-base font-montserrat leading-tight m-0 -mt-0.5">
                 {fileName}
               </DialogDescription>
             </DialogHeader>
@@ -158,4 +140,20 @@ function ProgressRing({ value }: { value: number | null }) {
       </div>
     </div>
   );
+}
+
+function buildThresholds(stepsLen: number) {
+  const each = 100 / stepsLen;
+  return Array.from({ length: stepsLen }, (_, i) => Math.round((i + 1) * each));
+}
+
+function getStepTitle(progress: number | null | undefined, status?: JobStatus) {
+  if (status === "failed") return "Processing failed";
+  if (status === "completed") return "completed";
+
+  const thresholds = buildThresholds(STEPS.length);
+  const p =
+    typeof progress === "number" ? Math.max(0, Math.min(100, progress)) : 0;
+  const idx = thresholds.findIndex((t) => p <= t);
+  return STEPS[Math.max(0, idx === -1 ? STEPS.length - 1 : idx)];
 }

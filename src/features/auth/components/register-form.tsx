@@ -24,9 +24,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema } from "../schema/auth";
+import { RegisterRequest, registerSchema } from "../schema/auth";
 import { useRegister } from "../hooks/use-auth";
 import {
   useLoginDialogStore,
@@ -40,7 +39,7 @@ interface RegisterFormProps {
 export default function RegisterForm({ isScrolled }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const form = useForm<z.infer<typeof registerSchema>>({
+  const form = useForm<RegisterRequest>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       username: "",
@@ -49,17 +48,15 @@ export default function RegisterForm({ isScrolled }: RegisterFormProps) {
     },
   });
 
-  const { mutateAsync: register, isPending } = useRegister();
+  const { mutate: register, isPending } = useRegister();
 
   const { isOpen, open, close } = useRegisterDialogStore();
   const { open: openLogin } = useLoginDialogStore();
 
-  const onSubmit = async (values: z.infer<typeof registerSchema>) => {
-    try {
-      await register({ ...values, role: values.role ?? "user" });
-      form.reset();
-      close();
-    } catch (_) {}
+  const onSubmit = (values: RegisterRequest) => {
+    register({ ...values, role: values.role ?? "user" });
+    form.reset();
+    close();
   };
 
   const handleDialog = () => {

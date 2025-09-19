@@ -9,41 +9,40 @@ const ACCEPTED_MIME_TYPES = [
   "audio/mp4",
 ];
 
-const isYouTubeUrl = (url: string) => {
-  try {
-    const parsed = new URL(url);
-    return (
-      parsed.hostname === "www.youtube.com" ||
-      parsed.hostname === "youtube.com" ||
-      parsed.hostname === "youtu.be"
-    );
-  } catch {
-    return false;
-  }
-};
+const fileSchema = z
+  .custom<File>((v) => v instanceof File, { message: "Please upload a file" })
+  .refine((f) => ACCEPTED_MIME_TYPES.includes(f.type), {
+    message: "File must be WAV, MP3, MOV, MP4, or MP4A",
+  })
+  .refine((f) => f.size <= MAX_FILE_SIZE, {
+    message: "File size must be 100MB or less",
+  });
 
-const fileOrUrlSchema = z.union([
-  z
-    .instanceof(File)
-    .refine((file) => ACCEPTED_MIME_TYPES.includes(file.type), {
-      message: "File must be WAV, MP3, MOV, MP4, or MP4A",
-    })
-    .refine((file) => file.size <= MAX_FILE_SIZE, {
-      message: "File size must be 100MB or less",
-    }),
+const youtubeUrlSchema = z
+  .string()
+  .url({ message: "Must be a valid URL" })
+  .refine(
+    (url) => {
+      try {
+        const u = new URL(url);
+        return (
+          u.hostname === "www.youtube.com" ||
+          u.hostname === "youtube.com" ||
+          u.hostname === "youtu.be"
+        );
+      } catch {
+        return false;
+      }
+    },
+    { message: "Must be a valid YouTube URL" }
+  );
 
-  z
-    .string()
-    .url({ message: "Must be a valid URL" })
-    .refine((url) => isYouTubeUrl(url), {
-      message: "Must be a valid YouTube URL",
-    }),
-]);
+const trackSourceSchema = z.union([fileSchema, youtubeUrlSchema]);
 
 export const vocalizerSchema = z.object({
-  vocal_audio: fileOrUrlSchema,
-  instrumental_audio: fileOrUrlSchema,
-  reference_audio: fileOrUrlSchema,
+  vocal_audio: fileSchema,
+  instrumental_audio: trackSourceSchema,
+  reference_audio: trackSourceSchema,
 });
 
 export type VocalizerRequest = z.infer<typeof vocalizerSchema>;

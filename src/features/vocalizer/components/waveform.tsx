@@ -4,7 +4,8 @@ import { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import WaveSurfer from "wavesurfer.js";
 
 interface Props {
-  audioUrl: string;
+  audioUrl?: string;
+  audioBlob?: Blob | File;
   isPlaying: boolean;
   onReady?: (duration: number) => void;
   onTimeUpdate?: (time: number) => void;
@@ -13,21 +14,23 @@ interface Props {
 export interface WaveformHandle {
   setVolume: (value: number) => void;
   getDuration: () => number;
+  getCurrentTime: () => number;
+  load: (url: string, seek?: number, autoplay?: boolean) => void;
+  loadBlob?: (blob: Blob, seek?: number, autoplay?: boolean) => void;
 }
 
 const Waveform = forwardRef<WaveformHandle, Props>(
-  ({ audioUrl, isPlaying, onReady, onTimeUpdate }, ref) => {
-    const waveformRef = useRef<HTMLDivElement | null>(null);
-    const wavesurferRef = useRef<WaveSurfer | null>(null);
+  ({ audioUrl, audioBlob, isPlaying, onReady, onTimeUpdate }, ref) => {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const wsRef = useRef<WaveSurfer | null>(null);
 
     useEffect(() => {
-      if (!waveformRef.current) return;
+      if (!containerRef.current || wsRef.current) return;
 
-      wavesurferRef.current = WaveSurfer.create({
-        container: waveformRef.current,
+      const ws = WaveSurfer.create({
+        container: containerRef.current,
         waveColor: "#1B3A6F",
         progressColor: "#3B82F6",
-        url: audioUrl,
         dragToSeek: true,
         hideScrollbar: true,
         normalize: true,
@@ -38,51 +41,55 @@ const Waveform = forwardRef<WaveformHandle, Props>(
         barWidth: 3,
         backend: "MediaElement",
       });
+      wsRef.current = ws;
 
-      const mediaEl = wavesurferRef.current.getMediaElement();
-      if (mediaEl) {
-        mediaEl.crossOrigin = "anonymous";
-      }
+      ws.on("ready", () => onReady?.(ws.getDuration()));
+      ws.on("audioprocess", () => onTimeUpdate?.(ws.getCurrentTime()));
 
-      wavesurferRef.current.on("ready", () => {
-        const duration = wavesurferRef.current!.getDuration();
-        onReady?.(duration);
-      });
-
-      wavesurferRef.current.on("audioprocess", () => {
-        const time = wavesurferRef.current!.getCurrentTime();
-        onTimeUpdate?.(time);
-      });
-
-      wavesurferRef.current.on("error", (e) => {
-        console.error("WaveSurfer error:", e);
-      });
+      if (audioBlob) ws.loadBlob(audioBlob);
+      else if (audioUrl) ws.load(audioUrl);
 
       return () => {
-        wavesurferRef.current?.destroy();
+        ws.destroy();
+        wsRef.current = null;
       };
-    }, [audioUrl]);
+    }, []);
 
     useEffect(() => {
-      const wavesurfer = wavesurferRef.current;
-      if (!wavesurfer) return;
-      isPlaying ? wavesurfer.play() : wavesurfer.pause();
+      const ws = wsRef.current;
+      if (!ws) return;
+      isPlaying ? ws.play() : ws.pause();
     }, [isPlaying]);
 
     useImperativeHandle(ref, () => ({
-      setVolume: (value: number) => {
-        wavesurferRef.current?.setVolume(value);
+      setVolume: (v) => wsRef.current?.setVolume(v),
+      getDuration: () => wsRef.current?.getDuration() ?? 0,
+      getCurrentTime: () => wsRef.current?.getCurrentTime() ?? 0,
+      load: (url, seek = 0, autoplay = false) => {
+        const ws = wsRef.current;
+        if (!ws || !url) return;
+        ws.once("ready", () => {
+          ws.setTime(seek);
+          if (autoplay) ws.play();
+        });
+        if (url.startsWith("blob:")) {
+          console.warn("Waveform.load tidak mendukung blob:, gunakan loadBlob");
+        } else {
+          ws.load(url);
+        }
       },
-      getDuration: () => wavesurferRef.current?.getDuration() || 0,
+      loadBlob: (blob, seek = 0, autoplay = false) => {
+        const ws = wsRef.current;
+        if (!ws) return;
+        ws.once("ready", () => {
+          ws.setTime(seek);
+          if (autoplay) ws.play();
+        });
+        ws.loadBlob(blob);
+      },
     }));
 
-    return (
-      <div
-        ref={waveformRef}
-        className="w-full h-[200px] overflow-hidden"
-        style={{ minHeight: "200px" }}
-      />
-    );
+    return <div ref={containerRef} className="w-full h-[200px]" />;
   }
 );
 
