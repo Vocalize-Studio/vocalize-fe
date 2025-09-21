@@ -50,14 +50,46 @@ export function VocalizedPreviewComparison({
     pause,
   } = useAudioComparisonPreview(uploadedFile, result);
 
-  useWaveformLoader({
-    isVisible,
-    waveformRef,
-    activeVersion,
-    uploadedFile,
-    currentUrl,
-    setCurrentTime,
-  });
+  // useWaveformLoader({
+  //   isVisible,
+  //   waveformRef,
+  //   activeVersion,
+  //   uploadedFile,
+  //   currentUrl,
+  //   setCurrentTime,
+  // });
+
+  const handleVersionChange = (next: "original" | "vocalized") => {
+    const wf = waveformRef.current;
+    if (!wf) return setActiveVersion(next);
+
+    const seek = wf.getCurrentTime();
+    const autoplay = wf.isPlaying();
+
+    setActiveVersion(next);
+
+    if (next === "original") {
+      if (uploadedFile) void wf.loadBlob?.(uploadedFile, seek, autoplay);
+      return;
+    }
+    const url = getModeUrl(tab, result);
+    if (url) void wf.load(url, seek, autoplay);
+  };
+
+  const handleTabChange = (nextTab: Mode) => {
+    const wf = waveformRef.current;
+    if (!wf) return onChangeTab(nextTab);
+
+    const seek = wf.getCurrentTime();
+    const autoplay = wf.isPlaying();
+
+    onChangeTab(nextTab);
+
+    if (activeVersion === "vocalized") {
+      const nextUrl = getModeUrl(nextTab, result);
+      if (nextUrl) void wf.load(nextUrl, seek, autoplay);
+    }
+  };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setVolume(parseFloat(e.target.value));
@@ -75,7 +107,7 @@ export function VocalizedPreviewComparison({
     <Dialog
       open={isVisible}
       onOpenChange={(open) => {
-        if (!open) onClose();
+        if (!open) return onClose();
       }}
     >
       <DialogContent
@@ -96,7 +128,7 @@ export function VocalizedPreviewComparison({
           </div>
         )}
         <div className="flex flex-col md:flex-row w-full">
-          <TabsList tab={tab} setTab={onChangeTab} />
+          <TabsList tab={tab} setTab={handleTabChange} />
           <div className="flex-1 p-4 space-y-4">
             <div className="bg-[#111] rounded">
               <div className="p-6 flex items-center gap-6 relative h-[300px]">
@@ -111,6 +143,17 @@ export function VocalizedPreviewComparison({
                     isPlaying={isPlaying}
                     onReady={setDuration}
                     onTimeUpdate={setCurrentTime}
+                    onFinish={() => {
+                      pause();
+                    }}
+                    initialBlob={
+                      activeVersion === "original" ? uploadedFile : null
+                    }
+                    initialUrl={
+                      activeVersion === "vocalized"
+                        ? getModeUrl(tab, result)
+                        : undefined
+                    }
                   />
                 )}
               </div>
@@ -119,7 +162,7 @@ export function VocalizedPreviewComparison({
                 <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-6 sm:gap-10 w-full px-2">
                   <VocalizerPreviewTrackButton
                     activeVersion={activeVersion}
-                    setActiveVersion={setActiveVersion}
+                    setActiveVersion={handleVersionChange}
                   />
 
                   <VolumeSlider

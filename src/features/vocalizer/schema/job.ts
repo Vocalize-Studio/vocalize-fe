@@ -14,6 +14,7 @@ export const JobResponseSchema = z.object({
     completed_at: z.number().optional(),
     result_uri: z.string().url().optional(),
     metadata: z.object({
+      detailed_status: z.string(),
       smooth_url: z.string().url().optional(),
       dynamic_url: z.string().url().optional(),
       standard_url: z.string().url().optional(),

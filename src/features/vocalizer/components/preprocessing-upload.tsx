@@ -8,6 +8,7 @@ import {
 import Image from "next/image";
 import { useMemo } from "react";
 import { JobStatus } from "../schema/job";
+import { ResultUrls } from "../models/vocalizer";
 
 type PreprocessingUploadProps = {
   open: boolean;
@@ -15,15 +16,8 @@ type PreprocessingUploadProps = {
   progress?: number | null;
   status?: JobStatus;
   onOpenChange?: (open: boolean) => void;
+  result: ResultUrls;
 };
-
-const STEPS = [
-  "Processing File...",
-  "Preprocessing Audio...",
-  "Correcting Vocal...",
-  "Mixing And Mastering Audio...",
-  "Finalizing...",
-];
 
 export default function PreprocessingUpload({
   open,
@@ -31,6 +25,7 @@ export default function PreprocessingUpload({
   fileName,
   progress,
   status,
+  result,
 }: PreprocessingUploadProps) {
   const pct = useMemo(() => {
     if (status === "completed") return 100;
@@ -40,8 +35,6 @@ export default function PreprocessingUpload({
 
     return Math.max(0, Math.min(100, Math.round(p)));
   }, [progress, status]);
-
-  const title = getStepTitle(pct ?? 0, status);
 
   console.log("ini progress : ", progress);
   console.log("ini status : ", status);
@@ -56,7 +49,7 @@ export default function PreprocessingUpload({
             </div>
             <DialogHeader className="text-left !space-y-0 p-0">
               <DialogTitle className="text-[#f4f4f4] text-sm sm:text-base md:text-lg font-semibold font-montserrat leading-tight m-0">
-                {title}
+                {result.detailed_status || "Loading..."}
               </DialogTitle>
               <DialogDescription className="text-[#929292] text-xs sm:text-sm md:text-base font-montserrat leading-tight m-0 -mt-0.5">
                 {fileName}
@@ -140,20 +133,4 @@ function ProgressRing({ value }: { value: number | null }) {
       </div>
     </div>
   );
-}
-
-function buildThresholds(stepsLen: number) {
-  const each = 100 / stepsLen;
-  return Array.from({ length: stepsLen }, (_, i) => Math.round((i + 1) * each));
-}
-
-function getStepTitle(progress: number | null | undefined, status?: JobStatus) {
-  if (status === "failed") return "Processing failed";
-  if (status === "completed") return "completed";
-
-  const thresholds = buildThresholds(STEPS.length);
-  const p =
-    typeof progress === "number" ? Math.max(0, Math.min(100, progress)) : 0;
-  const idx = thresholds.findIndex((t) => p <= t);
-  return STEPS[Math.max(0, idx === -1 ? STEPS.length - 1 : idx)];
 }

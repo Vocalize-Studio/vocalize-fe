@@ -22,7 +22,7 @@ import { useJobStatus } from "../hooks/use-job-status";
 export default function VocalizerForm({ userId }: { userId: number | null }) {
   const { form, isPending, jobId, onSubmit } = useVocalizerForm(userId);
 
-  const { isValid, isSubmitted } = form.formState;
+  const { isValid } = form.formState;
 
   const vocalRef = useRef<HTMLInputElement>(null);
   const instrumentalRef = useRef<HTMLInputElement>(null);
@@ -41,9 +41,11 @@ export default function VocalizerForm({ userId }: { userId: number | null }) {
   const isProcessing = Boolean(jobId) && status !== "completed";
   console.log("is process", isProcessing);
 
-  const [dismissedPreview, setDismissedPreview] = useState<boolean>(false);
+  const [dismissedForJobId, setDismissedForJobId] = useState<string | null>(
+    null
+  );
   const isPreviewVisible =
-    !dismissedPreview && isSubmitted && status === "completed";
+    Boolean(jobId) && status === "completed" && dismissedForJobId !== jobId;
 
   const vocalVal = useWatch({ control: form.control, name: "vocal_audio" }) as
     | string
@@ -141,12 +143,17 @@ export default function VocalizerForm({ userId }: { userId: number | null }) {
         fileName={vocalFileName}
         progress={Number(jobProgress || 0)}
         status={status}
+        result={{
+          detailed_status: meta?.detailed_status,
+        }}
       />
 
       {isPreviewVisible && (
         <VocalizedPreviewComparison
           isVisible
-          onClose={() => setDismissedPreview(true)}
+          onClose={() => {
+            if (jobId) setDismissedForJobId(jobId);
+          }}
           uploadedFile={vocalFile}
           result={{
             standard_url: meta?.standard_url,
@@ -331,7 +338,7 @@ function TrackFormField({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="flex flex-col w-full max-w-xl mx-auto lg:mx-0">
           <FormLabel className="text-white font-semibold text-lg">
             {label}
           </FormLabel>

@@ -4,9 +4,11 @@ const MAX_FILE_SIZE = 100 * 1024 * 1024;
 const ACCEPTED_MIME_TYPES = [
   "audio/mpeg",
   "audio/wav",
-  "video/quicktime",
-  "video/mp4",
   "audio/mp4",
+  "audio/aac",
+  "audio/ogg",
+  "audio/webm",
+  "video/mp4",
 ];
 
 const fileSchema = z

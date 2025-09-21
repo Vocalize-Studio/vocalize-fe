@@ -65,12 +65,15 @@ export function useAudioCore(): AudioCore {
     [isPlaying]
   );
 
+  const blobUrlRef = useRef<string | null>(null);
+
   const loadBlob = useCallback(
     (blob?: Blob, seek?: number, autoplay = false) => {
       if (!blob) return;
+      if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
       const url = URL.createObjectURL(blob);
+      blobUrlRef.current = url;
       load(url, seek, autoplay);
-      setTimeout(() => URL.revokeObjectURL(url), 10_000);
     },
     [load]
   );

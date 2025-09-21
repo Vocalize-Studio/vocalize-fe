@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getJobStatus, JobResponse } from "../services/get-job-status";
+import { getJobStatus } from "../services/get-job-status";
+import { JobResponse } from "../schema/job";
 
 export function useJobStatus(jobId: string | null) {
   return useQuery<JobResponse>({

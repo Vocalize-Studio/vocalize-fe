@@ -4,6 +4,7 @@ export type Mode = (typeof VOCALIZER_TABS)[number];
 export type Version = "original" | "vocalized";
 
 export type ResultUrls = {
+  detailed_status?: string | null;
   standard_url?: string | null;
   dynamic_url?: string | null;
   smooth_url?: string | null;
