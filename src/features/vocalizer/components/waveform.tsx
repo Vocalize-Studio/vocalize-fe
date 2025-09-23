@@ -4,30 +4,38 @@ import { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import WaveSurfer from "wavesurfer.js";
 
 interface Props {
-  audioUrl: string;
   isPlaying: boolean;
   onReady?: (duration: number) => void;
   onTimeUpdate?: (time: number) => void;
+  onFinish?: () => void;
+  initialUrl?: string;
+  initialBlob?: Blob | null;
 }
 
 export interface WaveformHandle {
   setVolume: (value: number) => void;
   getDuration: () => number;
+  getCurrentTime: () => number;
+  isPlaying: () => boolean;
+  load: (url: string, seek?: number, autoplay?: boolean) => void;
+  loadBlob?: (blob: Blob, seek?: number, autoplay?: boolean) => void;
 }
 
 const Waveform = forwardRef<WaveformHandle, Props>(
-  ({ audioUrl, isPlaying, onReady, onTimeUpdate }, ref) => {
-    const waveformRef = useRef<HTMLDivElement | null>(null);
-    const wavesurferRef = useRef<WaveSurfer | null>(null);
+  (
+    { isPlaying, onReady, onTimeUpdate, onFinish, initialUrl, initialBlob },
+    ref
+  ) => {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const wsRef = useRef<WaveSurfer | null>(null);
 
     useEffect(() => {
-      if (!waveformRef.current) return;
+      if (!containerRef.current || wsRef.current) return;
 
-      wavesurferRef.current = WaveSurfer.create({
-        container: waveformRef.current,
+      wsRef.current = WaveSurfer.create({
+        container: containerRef.current,
         waveColor: "#1B3A6F",
         progressColor: "#3B82F6",
-        url: audioUrl,
         dragToSeek: true,
         hideScrollbar: true,
         normalize: true,
@@ -39,50 +47,74 @@ const Waveform = forwardRef<WaveformHandle, Props>(
         backend: "MediaElement",
       });
 
-      const mediaEl = wavesurferRef.current.getMediaElement();
-      if (mediaEl) {
-        mediaEl.crossOrigin = "anonymous";
-      }
+      wsRef.current.on("ready", () => onReady?.(wsRef.current!.getDuration()));
+      wsRef.current.on("audioprocess", () =>
+        onTimeUpdate?.(wsRef.current!.getCurrentTime())
+      );
 
-      wavesurferRef.current.on("ready", () => {
-        const duration = wavesurferRef.current!.getDuration();
-        onReady?.(duration);
+      wsRef.current.on("finish", () => {
+        onFinish?.();
       });
 
-      wavesurferRef.current.on("audioprocess", () => {
-        const time = wavesurferRef.current!.getCurrentTime();
-        onTimeUpdate?.(time);
-      });
-
-      wavesurferRef.current.on("error", (e) => {
-        console.error("WaveSurfer error:", e);
-      });
+      if (initialBlob) wsRef.current.loadBlob(initialBlob);
+      else if (initialUrl) wsRef.current.load(initialUrl);
 
       return () => {
-        wavesurferRef.current?.destroy();
+        wsRef.current?.destroy();
+        wsRef.current = null;
       };
-    }, [audioUrl]);
+    }, []);
 
     useEffect(() => {
-      const wavesurfer = wavesurferRef.current;
-      if (!wavesurfer) return;
-      isPlaying ? wavesurfer.play() : wavesurfer.pause();
+      const ws = wsRef.current;
+      if (!ws) return;
+      isPlaying ? ws.play() : ws.pause();
     }, [isPlaying]);
 
     useImperativeHandle(ref, () => ({
-      setVolume: (value: number) => {
-        wavesurferRef.current?.setVolume(value);
+      setVolume: (v) => wsRef.current?.setVolume(v),
+      getDuration: () => wsRef.current?.getDuration() ?? 0,
+      getCurrentTime: () => wsRef.current?.getCurrentTime() ?? 0,
+      isPlaying: () => wsRef.current?.isPlaying() ?? false,
+      load: (url, seek = 0, autoplay = false) => {
+        const ws = wsRef.current;
+        if (!ws || !url) return;
+        const token = Symbol();
+        (ws as any)._token = token;
+        ws.once("ready", () => {
+          if ((ws as any)._token !== token) return;
+          const dur = ws.getDuration();
+          const s = Math.min(
+            Math.max(0, seek),
+            Number.isFinite(dur) ? Math.max(0, dur - 0.05) : seek
+          );
+          ws.setTime(s);
+          if (autoplay) ws.play();
+          onReady?.(ws.getDuration());
+        });
+        ws.load(url);
       },
-      getDuration: () => wavesurferRef.current?.getDuration() || 0,
+      loadBlob: (blob, seek = 0, autoplay = false) => {
+        const ws = wsRef.current;
+        if (!ws || !blob) return;
+        const token = Symbol();
+        (ws as any)._token = token;
+        ws.once("ready", () => {
+          if ((ws as any)._token !== token) return;
+          const dur = ws.getDuration();
+          const s = Math.min(
+            Math.max(0, seek),
+            Number.isFinite(dur) ? Math.max(0, dur - 0.05) : seek
+          );
+          ws.setTime(s);
+          if (autoplay) ws.play();
+          onReady?.(ws.getDuration());
+        });
+        ws.loadBlob(blob);
+      },
     }));
 
-    return (
-      <div
-        ref={waveformRef}
-        className="w-full h-[200px] overflow-hidden"
-        style={{ minHeight: "200px" }}
-      />
-    );
+    return <div ref={containerRef} className="w-full h-[200px]" />;
   }
 );
 

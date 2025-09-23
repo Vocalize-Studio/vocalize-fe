@@ -22,8 +22,7 @@ import {
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "../schema/auth";
-import { z } from "zod";
+import { LoginRequest, loginSchema } from "../schema/auth";
 import { useLogin } from "../hooks/use-auth";
 import {
   useLoginDialogStore,
@@ -37,22 +36,20 @@ interface LoginFormProps {
 export default function LoginForm({ onForgot }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const form = useForm<z.infer<typeof loginSchema>>({
+  const form = useForm<LoginRequest>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
   const { mutate: login, isPending } = useLogin();
 
-  const { isOpen, open, close } = useLoginDialogStore();
+  const { close } = useLoginDialogStore();
   const { open: openRegister } = useRegisterDialogStore();
 
-  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-    try {
-      await login(values);
-      form.reset();
-      close();
-    } catch (_) {}
+  const onSubmit = (values: LoginRequest) => {
+    login(values);
+    form.reset();
+    close();
   };
 
   const handleDialog = () => {
