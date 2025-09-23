@@ -1,25 +1,25 @@
 "use client";
 
 import React from "react";
-import { useAudioComparison } from "@/features/vocalizer/hooks/use-audio-comparison";
 import { tracks } from "@/features/vocalizer/constants/vocalizer";
 import VocalizerCarouselNav from "@/features/vocalizer/components/vocalizer-carousel-nav";
 import VocalizerTrackCarousel from "@/features/vocalizer/components/vocalizer-track-carousel";
 import VocalizerTrackButton from "@/features/vocalizer/components/vocalizer-track-button";
+import { useAudioComparisonCarousel } from "@/features/vocalizer/hooks/use-audio-comparison-carousel";
 
 export default function AudioComparisonSection() {
   const {
     activeVersion,
     setActiveVersion,
     isPlaying,
-    togglePlayback,
+    toggle,
     goPrev,
     goNext,
     currentTrack,
     setApi,
     audioSrc,
     audioRef,
-  } = useAudioComparison();
+  } = useAudioComparisonCarousel();
 
   return (
     <section className="py-16 md:py-20 px-4 bg-gray-50 relative">
@@ -51,7 +51,7 @@ export default function AudioComparisonSection() {
             <VocalizerTrackCarousel
               tracks={tracks}
               currentTrack={currentTrack}
-              togglePlayback={togglePlayback}
+              togglePlayback={toggle}
               activeVersion={activeVersion}
               setApi={setApi}
               isPlaying={isPlaying}

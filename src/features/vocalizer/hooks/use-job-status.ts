@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getJobStatus } from "../services/job-service";
-
-import type { JobResponse } from "../services/job-service";
+import { getJobStatus } from "../services/get-job-status";
+import { JobResponse } from "../schema/job";
 
 export function useJobStatus(jobId: string | null) {
   return useQuery<JobResponse>({
@@ -10,5 +9,6 @@ export function useJobStatus(jobId: string | null) {
     queryFn: () => getJobStatus(jobId!),
     refetchInterval: (query) =>
       query.state.data?.data.status === "completed" ? false : 3000,
+    staleTime: 1000 * 60 * 5,
   });
 }

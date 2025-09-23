@@ -59,7 +59,7 @@ export default async function VocalizeHeroSection() {
   );
 }
 
-export const VocalizerFeatureList = () => {
+function VocalizerFeatureList() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-16 max-w-full py-4 md:p-8 mx-auto items-stretch h-full">
       {vocalizerFeatures.map((feature) => (
@@ -72,4 +72,4 @@ export const VocalizerFeatureList = () => {
       ))}
     </div>
   );
-};
+}

@@ -15,7 +15,7 @@ const navItems = ["AI Vocalizer", "Pricing", "Blog", "Library"];
 export default function NavbarContainer({ user }: { user: SessionUser }) {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
-  const isLoggedIn = !!user;
+  const isLoggedIn = user.role !== "guest" && !!user.id;
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 10);

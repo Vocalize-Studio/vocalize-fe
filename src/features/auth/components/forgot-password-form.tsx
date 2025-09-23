@@ -2,8 +2,7 @@
 
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { forgotPasswordSchema } from "../schema/auth";
-import { z } from "zod";
+import { ForgotPasswordRequest, forgotPasswordSchema } from "../schema/auth";
 import StepEmailForm from "./step-email-form";
 import StepNewPasswordForm from "./new-password-form";
 import StepCodeForm from "./step-code-form";
@@ -13,14 +12,12 @@ import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useMemo, useRef } from "react";
 
-type ForgotForm = z.infer<typeof forgotPasswordSchema>;
-
 export default function ForgotPasswordForm({
   onBackToLogin,
 }: {
   onBackToLogin: () => void;
 }) {
-  const methods = useForm<ForgotForm>({
+  const form = useForm<ForgotPasswordRequest>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: { email: "", otp: "", password: "", confirmPassword: "" },
     mode: "onTouched",
@@ -63,7 +60,7 @@ export default function ForgotPasswordForm({
   );
 
   return (
-    <FormProvider {...methods}>
+    <FormProvider {...form}>
       <div className="mx-auto w-full max-w-[420px] px-5">
         <div ref={stepRef} className="w-full">
           {steps[currentIndex]}
