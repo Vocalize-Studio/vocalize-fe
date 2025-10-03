@@ -11,7 +11,7 @@ export async function getJobStatus(
   const token = cookieStore.get("token")?.value || "";
 
   const res = await apiClient<JobResponse>(
-    `/api/v1/ml/jobs/${job_id}/results`,
+    `/api/v1/files/outputs/${job_id}`,
     "GET",
     {
       headers: {
