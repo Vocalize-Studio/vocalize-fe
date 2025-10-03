@@ -18,9 +18,19 @@ import { useVocalizerForm } from "../hooks/use-vocalizer-form";
 import { useWatch } from "react-hook-form";
 import { useRawVoiceUpload } from "../hooks/use-raw-voice-upload";
 import { useJobStatus } from "../hooks/use-job-status";
+import { UploadAccessDialog } from "./upload-access-dialog";
 
 export default function VocalizerForm({ userId }: { userId: number | null }) {
-  const { form, isPending, jobId, onSubmit } = useVocalizerForm(userId);
+  const {
+    form,
+    isPending,
+    jobId,
+    onSubmit,
+    authDialogOpen,
+    setAuthDialogOpen,
+    handleClickLogin,
+    handleContinueAsGuest,
+  } = useVocalizerForm(userId);
 
   const { isValid } = form.formState;
 
@@ -162,6 +172,13 @@ export default function VocalizerForm({ userId }: { userId: number | null }) {
           }}
         />
       )}
+      <UploadAccessDialog
+        open={authDialogOpen}
+        onOpenChange={setAuthDialogOpen}
+        onLogin={handleClickLogin}
+        onGuest={handleContinueAsGuest}
+        loading={isPending}
+      />
     </div>
   );
 }
@@ -253,7 +270,7 @@ function VocalDropzone({
           onChange(file);
         }
       }}
-      className="bg-transparent border-3 border-dashed border-white rounded-xl p-6 transition-colors max-w-xl w-full hover-lift mx-auto lg:mx-0 mt-2 cursor-pointer"
+      className="bg-transparent border-[3px] border-dashed border-white rounded-xl p-6 transition-colors max-w-xl w-full hover-lift mx-auto lg:mx-0 mt-2 cursor-pointer"
     >
       <input
         ref={inputRef}
