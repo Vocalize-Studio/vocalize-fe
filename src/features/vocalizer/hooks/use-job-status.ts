@@ -10,5 +10,6 @@ export function useJobStatus(jobId: string | null) {
     refetchInterval: (query) =>
       query.state.data?.data.status === "completed" ? false : 3000,
     staleTime: 1000 * 60 * 5,
+    retry: 2,
   });
 }

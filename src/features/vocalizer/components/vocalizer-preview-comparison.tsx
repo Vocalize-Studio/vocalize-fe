@@ -11,7 +11,6 @@ import { FaPlay, FaPause } from "react-icons/fa";
 import VocalizerPreviewTrackButton from "./vocalizer-preview-track-button";
 import { FaVolumeUp } from "react-icons/fa";
 import Waveform, { WaveformHandle } from "./waveform";
-import { formatTime } from "@/lib/format-time";
 import { Icon } from "@iconify/react";
 import { useAudioComparisonPreview } from "../hooks/use-audio-comparison-preview";
 import {
@@ -21,7 +20,7 @@ import {
   getModeUrl,
 } from "@/features/vocalizer/models/vocalizer";
 import { useDownloadTrack } from "../hooks/use-download-track";
-import { useWaveformLoader } from "../hooks/use-waveform-loader";
+import { formatTime } from "@/lib/format-time";
 
 export function VocalizedPreviewComparison({
   isVisible,
@@ -49,15 +48,6 @@ export function VocalizedPreviewComparison({
     setActiveVersion,
     pause,
   } = useAudioComparisonPreview(uploadedFile, result);
-
-  // useWaveformLoader({
-  //   isVisible,
-  //   waveformRef,
-  //   activeVersion,
-  //   uploadedFile,
-  //   currentUrl,
-  //   setCurrentTime,
-  // });
 
   const handleVersionChange = (next: "original" | "vocalized") => {
     const wf = waveformRef.current;
@@ -102,6 +92,14 @@ export function VocalizedPreviewComparison({
     tab,
     activeVersion
   );
+
+  console.log("tab:", tab);
+  console.log("result urls:", {
+    standard: result?.standard_url,
+    dynamic: result?.dynamic_url,
+    smooth: result?.smooth_url,
+  });
+  console.log("resolved url:", getModeUrl(tab, result));
 
   return (
     <Dialog

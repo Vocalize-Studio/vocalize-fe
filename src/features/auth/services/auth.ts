@@ -22,14 +22,14 @@ export async function login(payload: LoginRequest): Promise<{
 
   const cookieStore = await cookies();
   cookieStore.set("token", access_token, {
-    httpOnly: true,
-    secure: true,
+    // httpOnly: true,
+    // secure: true,
     path: "/",
     maxAge: expires_in ?? 60 * 60 * 24,
   });
 
   cookieStore.set("refresh_token", refresh_token, {
-    httpOnly: true,
+    // httpOnly: true,
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 30,
@@ -53,4 +53,45 @@ export async function logout(): Promise<void> {
   const c = await cookies();
   c.set("token", "", { httpOnly: true, path: "/", maxAge: 0 });
   c.set("refresh_token", "", { httpOnly: true, path: "/", maxAge: 0 });
+}
+
+export type GuestSessionResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    expires_in: number;
+    guest_token: string;
+    token_type: "Bearer";
+    user: {
+      id: number;
+      is_guest: boolean;
+      role: string;
+      created_at: number;
+      expires_at: number;
+    };
+  };
+  timestamp: number;
+};
+
+export async function createGuestSessionAction() {
+  const res = await apiClient<GuestSessionResponse>(
+    "/api/v1/guest/session",
+    "POST"
+  );
+
+  if (!res?.data?.guest_token || !res?.data?.user?.id) {
+    throw new Error(
+      "Guest session invalid: token atau user id tidak ditemukan"
+    );
+  }
+
+  const cookieStore = await cookies();
+  cookieStore.set("token", res.data.guest_token, {
+    // httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: res.data.expires_in,
+  });
+
+  return { guestUserId: res.data.user.id };
 }
