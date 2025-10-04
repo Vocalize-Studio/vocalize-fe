@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
   console.log(`Using redirect URI: ${redirectUri}`);
 
   const url =
-    `${BE_BASE}/api/v1/auth/google/callback?` +
+    `${BE_BASE}/api/v1/google/callback?` +
     `code=${encodeURIComponent(code)}` +
     `&state=${encodeURIComponent(state)}` +
     `&redirect_uri=${encodeURIComponent(redirectUri)}`;
@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
   const cookieStore = await cookies();
 
   cookieStore.set("token", access_token, {
-    httpOnly: true,
+    // httpOnly: true,
     // secure: true,
     path: "/",
     maxAge: expires_in ?? 60 * 60 * 24,

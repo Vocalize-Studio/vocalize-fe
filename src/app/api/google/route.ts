@@ -5,7 +5,7 @@ export async function GET() {
   if (!base) return new Response("BACKEND_API_URL not set", { status: 500 });
 
   const r = await fetch(
-    `${base}/api/v1/auth/google/url?ngrok-skip-browser-warning=true`,
+    `${base}/api/v1/google/url?ngrok-skip-browser-warning=true`,
     {
       headers: {
         Accept: "application/json",
