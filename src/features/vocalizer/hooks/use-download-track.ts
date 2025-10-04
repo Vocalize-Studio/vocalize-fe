@@ -2,70 +2,93 @@ import { getModeUrl, Version } from "../models/vocalizer";
 import { Mode, ResultUrls } from "./use-audio-comparison-preview";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import { Capabilities } from "@/lib/role-access";
+import { toast } from "sonner";
+import { trimToWavBlob } from "../utils/audio-trim";
 
-async function fetchAsBlob(url: string) {
-  const r = await fetch(url, { credentials: "include" });
-  if (!r.ok) throw new Error(`Failed to fetch: ${r.status}`);
-  return await r.blob();
-}
+// async function fetchAsBlob(url: string) {
+//   const r = await fetch(url, { credentials: "include" });
+//   if (!r.ok) throw new Error(`Failed to fetch: ${r.status}`);
+//   return await r.blob();
+// }
 
 export function useDownloadTrack(
   uploadedFile: File | null,
   result: ResultUrls,
   tab: Mode,
-  activeVersion: Version
+  activeVersion: Version,
+  caps: Capabilities
 ) {
   const baseName = uploadedFile?.name?.replace(/\.[^/.]+$/, "") || "my-song";
 
+  const limitForVocalized =
+    activeVersion === "vocalized" ? caps.previewLimitSec : null;
+
   const downloadThis = async () => {
+    if (!caps.allowDownload) {
+      toast.info("Login first");
+      return;
+    }
+
     if (uploadedFile && activeVersion === "original") {
-      const url = URL.createObjectURL(uploadedFile);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${baseName}_Original.wav`;
-      a.rel = "noopener";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      saveAs(uploadedFile, `${baseName}_Original.wav`);
       return;
     }
 
     const currentUrl = getModeUrl(tab, result);
     if (!currentUrl) return;
 
-    const blob = await fetchAsBlob(currentUrl);
-    saveAs(blob, `${baseName}_${tab}.wav`);
+    if (limitForVocalized) {
+      const trimmed = await trimToWavBlob(currentUrl, limitForVocalized);
+      saveAs(trimmed, `${baseName}_${tab}_preview.wav`);
+    } else {
+      const blob = await (
+        await fetch(currentUrl, { credentials: "include" })
+      ).blob();
+      saveAs(blob, `${baseName}_${tab}.wav`);
+    }
   };
 
   const downloadAll = async () => {
-    const entries = [
-      result.standard_url && { url: result.standard_url, label: "Standard" },
-      result.dynamic_url && { url: result.dynamic_url, label: "Dynamic" },
-      result.smooth_url && { url: result.smooth_url, label: "Smooth" },
-    ].filter(Boolean) as { url: string; label: Mode }[];
-
-    if (entries.length === 0) {
-      console.warn("No entries to download");
+    if (!caps.allowDownload) {
+      toast.info("Upgrade untuk mengunduh semua versi.");
       return;
     }
 
-    const zip = new JSZip();
+    const entries = [
+      result.standard_url && {
+        url: result.standard_url,
+        label: "Standard" as Mode,
+      },
+      result.dynamic_url && {
+        url: result.dynamic_url,
+        label: "Dynamic" as Mode,
+      },
+      result.smooth_url && { url: result.smooth_url, label: "Smooth" as Mode },
+    ].filter(Boolean) as { url: string; label: Mode }[];
 
+    if (!entries.length) return;
+
+    const zip = new JSZip();
     for (const { url, label } of entries) {
       try {
-        console.log("Fetching:", url);
-        const blob = await fetchAsBlob(url);
-        zip.file(`${baseName}_${label}.wav`, blob);
-      } catch (err) {
-        console.error("Failed to fetch", url, err);
+        const fileBlob = caps.previewLimitSec
+          ? await trimToWavBlob(url, caps.previewLimitSec)
+          : await (await fetch(url, { credentials: "include" })).blob();
+        zip.file(
+          `${baseName}_${label}${caps.previewLimitSec ? "_preview" : ""}.wav`,
+          fileBlob
+        );
+      } catch (e) {
+        console.error("Failed:", label, e);
       }
     }
 
     const content = await zip.generateAsync({ type: "blob" });
-    console.log("Generated ZIP size:", content.size);
-
-    saveAs(content, `${baseName}_Vocalized_All.zip`);
+    saveAs(
+      content,
+      `${baseName}_Vocalized_All${caps.previewLimitSec ? "_preview" : ""}.zip`
+    );
   };
 
   return { downloadThis, downloadAll };
