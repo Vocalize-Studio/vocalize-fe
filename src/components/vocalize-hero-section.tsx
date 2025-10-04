@@ -50,7 +50,10 @@ export default async function VocalizeHeroSection() {
                 </span>
               </p>
             </div>
-            <VocalizerForm userId={user?.id ?? null} />
+            <VocalizerForm
+              role={user?.role ?? null}
+              userId={user?.id ?? null}
+            />
           </div>
         </div>
         <VocalizerFeatureList />

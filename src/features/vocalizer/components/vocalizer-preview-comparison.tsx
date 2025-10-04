@@ -21,18 +21,24 @@ import {
 } from "@/features/vocalizer/models/vocalizer";
 import { useDownloadTrack } from "../hooks/use-download-track";
 import { formatTime } from "@/lib/format-time";
+import { getCaps, Role } from "@/lib/role-access";
+import { UpgradePlanDialog } from "./upgrade-plan-dialog";
 
 export function VocalizedPreviewComparison({
   isVisible,
   onClose,
   uploadedFile,
   result,
+  role,
 }: {
   isVisible: boolean;
   onClose: () => void;
   uploadedFile: File | null;
   result: ResultUrls;
+  role: Role;
 }) {
+  const caps = getCaps(role);
+
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const waveformRef = useRef<WaveformHandle | null>(null);
@@ -86,11 +92,35 @@ export function VocalizedPreviewComparison({
     waveformRef.current?.setVolume(parseFloat(e.target.value));
   };
 
+  const [showUpgrade, setShowUpgrade] = useState(false);
+
+  const openUpgrade = () => {
+    setShowUpgrade(true);
+    pause();
+    waveformRef.current?.pause();
+  };
+
+  const closeUpgrade = () => {
+    setShowUpgrade(false);
+    waveformRef.current?.setTime(0);
+    setCurrentTime(0);
+  };
+
+  const handleTimeUpdate = (t: number) => {
+    setCurrentTime(t);
+
+    const limit = activeVersion === "vocalized" ? caps.previewLimitSec : null;
+    if (limit !== null && t >= limit && !showUpgrade) {
+      openUpgrade();
+    }
+  };
+
   const { downloadThis, downloadAll } = useDownloadTrack(
     uploadedFile,
     result,
     tab,
-    activeVersion
+    activeVersion,
+    caps
   );
 
   console.log("tab:", tab);
@@ -126,7 +156,11 @@ export function VocalizedPreviewComparison({
           </div>
         )}
         <div className="flex flex-col md:flex-row w-full">
-          <TabsList tab={tab} setTab={handleTabChange} />
+          <TabsList
+            tab={tab}
+            setTab={handleTabChange}
+            allowedTabs={caps.allowedTabs}
+          />
           <div className="flex-1 p-4 space-y-4">
             <div className="bg-[#111] rounded">
               <div className="p-6 flex items-center gap-6 relative h-[300px]">
@@ -140,7 +174,7 @@ export function VocalizedPreviewComparison({
                     ref={waveformRef}
                     isPlaying={isPlaying}
                     onReady={setDuration}
-                    onTimeUpdate={setCurrentTime}
+                    onTimeUpdate={handleTimeUpdate}
                     onFinish={() => {
                       pause();
                     }}
@@ -174,9 +208,7 @@ export function VocalizedPreviewComparison({
               </div>
             </div>
             <VocalizePreviewActions
-              canDownloadThis={
-                !(activeVersion === "vocalized" && !getModeUrl(tab, result))
-              }
+              canDownloadThis={caps.allowDownload}
               onDownloadThis={downloadThis}
               onDownloadAll={downloadAll}
               hasAnyResult={Boolean(
@@ -185,25 +217,44 @@ export function VocalizedPreviewComparison({
             />
           </div>
         </div>
+        <UpgradePlanDialog open={showUpgrade} onClose={closeUpgrade} />
       </DialogContent>
     </Dialog>
   );
 }
 
-function TabsList({ tab, setTab }: { tab: Mode; setTab: (m: Mode) => void }) {
+function TabsList({
+  tab,
+  setTab,
+  allowedTabs,
+}: {
+  tab: Mode;
+  setTab: (m: Mode) => void;
+  allowedTabs: Mode[];
+}) {
   return (
     <div className="flex md:flex-col flex-row md:w-[250px] w-full border-b md:border-b-0 md:border-r border-[#333]">
       {TABS.map((label) => {
         const active = tab === label;
+        const isAllowed = allowedTabs.includes(label as Mode);
+
         return (
           <button
             key={label}
-            onClick={() => setTab(label)}
-            className={`relative flex items-center justify-center md:justify-start gap-1 px-4 py-3 text-left transition-colors w-full ${
-              active ? "bg-[#262626] text-white font-semibold" : "text-[#888]"
-            } hover:bg-[#333]`}
+            onClick={() => isAllowed && setTab(label)}
+            disabled={!isAllowed}
+            className={`relative flex items-center justify-center md:justify-start gap-2 px-4 py-3 text-left transition-colors w-full
+              ${
+                active && isAllowed
+                  ? "bg-[#262626] text-white font-semibold"
+                  : "text-[#888]"
+              }
+              ${
+                !isAllowed ? "opacity-60 cursor-not-allowed" : "hover:bg-[#333]"
+              }
+            `}
           >
-            {active && (
+            {active && isAllowed && (
               <span className="absolute md:left-0 md:top-0 md:h-full md:w-1 left-0 bottom-0 w-full h-[2px] bg-[#3B82F6] md:rounded-r-md" />
             )}
             <div className="w-10 text-center">
@@ -217,7 +268,10 @@ function TabsList({ tab, setTab }: { tab: Mode; setTab: (m: Mode) => void }) {
                 <Icon icon="mdi:smoothing-iron" width="44" height="40" />
               )}
             </div>
-            <span className="text-xs">{label}</span>
+            <span className="text-xs flex items-center gap-1">
+              {label}
+              {!isAllowed && <span className="text-blue-400">★</span>}
+            </span>
           </button>
         );
       })}

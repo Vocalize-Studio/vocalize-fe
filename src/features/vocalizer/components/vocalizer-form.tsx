@@ -19,8 +19,15 @@ import { useWatch } from "react-hook-form";
 import { useRawVoiceUpload } from "../hooks/use-raw-voice-upload";
 import { useJobStatus } from "../hooks/use-job-status";
 import { UploadAccessDialog } from "./upload-access-dialog";
+import { Role } from "@/lib/role-access";
 
-export default function VocalizerForm({ userId }: { userId: number | null }) {
+export default function VocalizerForm({
+  userId,
+  role,
+}: {
+  userId: number | null;
+  role: Role;
+}) {
   const {
     form,
     isPending,
@@ -170,6 +177,7 @@ export default function VocalizerForm({ userId }: { userId: number | null }) {
             smooth_url: meta?.smooth_url,
             dynamic_url: meta?.dynamic_url,
           }}
+          role={role}
         />
       )}
       <UploadAccessDialog

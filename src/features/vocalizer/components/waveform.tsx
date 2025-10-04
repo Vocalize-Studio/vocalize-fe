@@ -10,6 +10,7 @@ interface Props {
   onFinish?: () => void;
   initialUrl?: string;
   initialBlob?: Blob | null;
+  limitSec?: number | null;
 }
 
 export interface WaveformHandle {
@@ -17,6 +18,9 @@ export interface WaveformHandle {
   getDuration: () => number;
   getCurrentTime: () => number;
   isPlaying: () => boolean;
+  setTime: (time: number) => void;
+  play: () => void;
+  pause: () => void;
   load: (url: string, seek?: number, autoplay?: boolean) => void;
   loadBlob?: (blob: Blob, seek?: number, autoplay?: boolean) => void;
 }
@@ -28,6 +32,14 @@ const Waveform = forwardRef<WaveformHandle, Props>(
   ) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const wsRef = useRef<WaveSurfer | null>(null);
+
+    const onReadyRef = useRef(onReady);
+    const onTimeUpdateRef = useRef(onTimeUpdate);
+    const onFinishRef = useRef(onFinish);
+
+    onReadyRef.current = onReady;
+    onTimeUpdateRef.current = onTimeUpdate;
+    onFinishRef.current = onFinish;
 
     useEffect(() => {
       if (!containerRef.current || wsRef.current) return;
@@ -47,13 +59,18 @@ const Waveform = forwardRef<WaveformHandle, Props>(
         backend: "MediaElement",
       });
 
-      wsRef.current.on("ready", () => onReady?.(wsRef.current!.getDuration()));
-      wsRef.current.on("audioprocess", () =>
-        onTimeUpdate?.(wsRef.current!.getCurrentTime())
-      );
+      wsRef.current.on("ready", () => {
+        const dur = wsRef.current!.getDuration();
+        onReadyRef.current?.(dur);
+      });
+
+      wsRef.current.on("audioprocess", () => {
+        const t = wsRef.current!.getCurrentTime();
+        onTimeUpdateRef.current?.(t);
+      });
 
       wsRef.current.on("finish", () => {
-        onFinish?.();
+        onFinishRef.current?.();
       });
 
       if (initialBlob) wsRef.current.loadBlob(initialBlob);
@@ -76,6 +93,9 @@ const Waveform = forwardRef<WaveformHandle, Props>(
       getDuration: () => wsRef.current?.getDuration() ?? 0,
       getCurrentTime: () => wsRef.current?.getCurrentTime() ?? 0,
       isPlaying: () => wsRef.current?.isPlaying() ?? false,
+      setTime: (t) => wsRef.current?.setTime(t),
+      play: () => wsRef.current?.play(),
+      pause: () => wsRef.current?.pause(),
       load: (url, seek = 0, autoplay = false) => {
         const ws = wsRef.current;
         if (!ws || !url) return;
@@ -90,7 +110,7 @@ const Waveform = forwardRef<WaveformHandle, Props>(
           );
           ws.setTime(s);
           if (autoplay) ws.play();
-          onReady?.(ws.getDuration());
+          onReadyRef.current?.(ws.getDuration());
         });
         ws.load(url);
       },
@@ -108,7 +128,7 @@ const Waveform = forwardRef<WaveformHandle, Props>(
           );
           ws.setTime(s);
           if (autoplay) ws.play();
-          onReady?.(ws.getDuration());
+          onReadyRef.current?.(ws.getDuration());
         });
         ws.loadBlob(blob);
       },
