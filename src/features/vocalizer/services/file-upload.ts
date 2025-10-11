@@ -4,12 +4,8 @@
 // import { cookies } from "next/headers";
 
 import { getCookie } from "@/lib/cookies";
-import { UploadPayload, VocalizerRequest } from "../schema/vocalizer";
-
-function appendFormData(fd: FormData, key: string, val: unknown) {
-  if (val instanceof File) fd.append(key, val);
-  else if (val !== undefined && val !== null) fd.append(key, String(val));
-}
+import { UploadPayload } from "../schema/vocalizer";
+import { buildUploadFormData } from "../utils/build-upload-form";
 
 export async function uploadDirect(values: UploadPayload) {
   if (values.user_id === undefined || values.user_id === null) {
@@ -19,12 +15,12 @@ export async function uploadDirect(values: UploadPayload) {
   if (Number.isNaN(userId))
     throw new Error("Invalid user_id: must be a number");
 
-  const fd = new FormData();
-  (Object.keys(values) as (keyof VocalizerRequest)[]).forEach((k) =>
-    appendFormData(fd, k as string, values[k])
-  );
-  if (!fd.has("user_id")) fd.append("user_id", String(userId));
-  if (!fd.has("auto_start_ml_job")) fd.append("auto_start_ml_job", "true");
+  const fd = buildUploadFormData({
+    user_id: userId,
+    vocal_audio: values.vocal_audio as File,
+    instrumental_audio: (values as any).instrumental_audio as any,
+    reference_audio: (values as any).reference_audio as any,
+  });
 
   const base = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
   if (!base) throw new Error("NEXT_PUBLIC_API_URL is not set");
