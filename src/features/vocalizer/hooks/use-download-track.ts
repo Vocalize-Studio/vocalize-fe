@@ -2,9 +2,10 @@ import { getModeUrl, Version } from "../models/vocalizer";
 import { Mode, ResultUrls } from "./use-audio-comparison-preview";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import { Capabilities } from "@/lib/role-access";
+import { Capabilities, Role } from "@/lib/role-access";
 import { toast } from "sonner";
 import { trimToWavBlob } from "../utils/audio-trim";
+import { useLoginDialogStore } from "@/store/auth-dialog-store";
 
 // async function fetchAsBlob(url: string) {
 //   const r = await fetch(url, { credentials: "include" });
@@ -17,18 +18,29 @@ export function useDownloadTrack(
   result: ResultUrls,
   tab: Mode,
   activeVersion: Version,
-  caps: Capabilities
+  caps: Capabilities,
+  role: Role,
+  openUpgrade: () => void
 ) {
+  const { open: openLogin } = useLoginDialogStore();
   const baseName = uploadedFile?.name?.replace(/\.[^/.]+$/, "") || "my-song";
-
   const limitForVocalized =
     activeVersion === "vocalized" ? caps.previewLimitSec : null;
 
-  const downloadThis = async () => {
+  const guardAccess = (action: "download this" | "download all"): boolean => {
     if (!caps.allowDownload) {
-      toast.info("Login first");
-      return;
+      if (role === "guest") {
+        openLogin("login");
+        return false;
+      }
+      openUpgrade();
+      return false;
     }
+    return true;
+  };
+
+  const downloadThis = async () => {
+    if (!guardAccess("download this")) return;
 
     if (uploadedFile && activeVersion === "original") {
       saveAs(uploadedFile, `${baseName}_Original.wav`);
@@ -50,21 +62,12 @@ export function useDownloadTrack(
   };
 
   const downloadAll = async () => {
-    if (!caps.allowDownload) {
-      toast.info("Upgrade untuk mengunduh semua versi.");
-      return;
-    }
+    if (!guardAccess("download all")) return;
 
     const entries = [
-      result.standard_url && {
-        url: result.standard_url,
-        label: "Standard" as Mode,
-      },
-      result.dynamic_url && {
-        url: result.dynamic_url,
-        label: "Dynamic" as Mode,
-      },
-      result.smooth_url && { url: result.smooth_url, label: "Smooth" as Mode },
+      result.standard_url && { url: result.standard_url, label: "Standard" },
+      result.dynamic_url && { url: result.dynamic_url, label: "Dynamic" },
+      result.smooth_url && { url: result.smooth_url, label: "Smooth" },
     ].filter(Boolean) as { url: string; label: Mode }[];
 
     if (!entries.length) return;

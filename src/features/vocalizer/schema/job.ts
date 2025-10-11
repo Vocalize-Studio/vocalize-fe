@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-export const JobStatusSchema = z.enum(["queued", "completed", "failed"]);
+export const JobStatusSchema = z.enum([
+  "queued",
+  "processing",
+  "completed",
+  "failed",
+]);
 
 export const JobResponseSchema = z.object({
   success: z.boolean(),
@@ -13,7 +18,7 @@ export const JobResponseSchema = z.object({
     updated_at: z.number(),
     completed_at: z.number().optional(),
     result_uri: z.string().url().optional(),
-    metadata: z.object({
+    master_outputs: z.object({
       detailed_status: z.string(),
       smooth_url: z.string().url().optional(),
       dynamic_url: z.string().url().optional(),
