@@ -23,6 +23,7 @@ import { useDownloadTrack } from "../hooks/use-download-track";
 import { formatTime } from "@/lib/format-time";
 import { getCaps, Role } from "@/lib/role-access";
 import { UpgradePlanDialog } from "./upgrade-plan-dialog";
+import { useLoginDialogStore } from "@/store/auth-dialog-store";
 
 export function VocalizedPreviewComparison({
   isVisible,
@@ -120,16 +121,18 @@ export function VocalizedPreviewComparison({
     result,
     tab,
     activeVersion,
-    caps
+    caps,
+    role,
+    openUpgrade
   );
 
-  console.log("tab:", tab);
-  console.log("result urls:", {
-    standard: result?.standard_url,
-    dynamic: result?.dynamic_url,
-    smooth: result?.smooth_url,
-  });
-  console.log("resolved url:", getModeUrl(tab, result));
+  // console.log("tab:", tab);
+  // console.log("result urls:", {
+  //   standard: result?.standard_url,
+  //   dynamic: result?.dynamic_url,
+  //   smooth: result?.smooth_url,
+  // });
+  // console.log("resolved url:", getModeUrl(tab, result));
 
   return (
     <Dialog
@@ -214,6 +217,7 @@ export function VocalizedPreviewComparison({
               hasAnyResult={Boolean(
                 result.standard_url || result.dynamic_url || result.smooth_url
               )}
+              role={role}
             />
           </div>
         </div>
@@ -346,12 +350,16 @@ function VocalizePreviewActions({
   onDownloadThis,
   onDownloadAll,
   hasAnyResult,
+  role,
 }: {
   canDownloadThis: boolean;
   onDownloadThis: () => void;
   onDownloadAll: () => void;
   hasAnyResult: boolean;
+  role: Role;
 }) {
+  const canDownload = role === "premium" || role === "admin";
+  const canAddToLibrary = role === "premium" || role === "admin";
   return (
     <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 pt-4 w-full">
       <button className="w-full sm:w-auto px-5 py-3 rounded-full bg-[#444] text-white font-semibold hover:bg-[#555]">
@@ -360,7 +368,7 @@ function VocalizePreviewActions({
       <button
         onClick={onDownloadThis}
         className="w-full sm:w-auto gradient-border-button disabled:opacity-40"
-        disabled={!canDownloadThis}
+        disabled={!canDownloadThis || !canDownload}
       >
         <span className="text-professional-song font-medium">
           Download <span className="font-bold ml-1">This</span>
@@ -369,7 +377,7 @@ function VocalizePreviewActions({
       <button
         onClick={onDownloadAll}
         className="cursor-pointer w-full sm:w-auto px-5 py-3 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#234C90] text-white font-semibold flex items-center justify-center gap-2 hover:from-[#60A5FA] hover:to-[#3B82F6] disabled:opacity-40"
-        disabled={!hasAnyResult}
+        disabled={!hasAnyResult || !canDownload}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
