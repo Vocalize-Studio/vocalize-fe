@@ -358,7 +358,7 @@ function VocalizePreviewActions({
   hasAnyResult: boolean;
   role: Role;
 }) {
-  const canDownload = role === "premium" || role === "admin";
+  // const canDownload = role === "premium" || role === "admin";
   const canAddToLibrary = role === "premium" || role === "admin";
   return (
     <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 pt-4 w-full">
@@ -368,7 +368,7 @@ function VocalizePreviewActions({
       <button
         onClick={onDownloadThis}
         className="w-full sm:w-auto gradient-border-button disabled:opacity-40"
-        disabled={!canDownloadThis || !canDownload}
+        disabled={!canDownloadThis}
       >
         <span className="text-professional-song font-medium">
           Download <span className="font-bold ml-1">This</span>
@@ -377,7 +377,7 @@ function VocalizePreviewActions({
       <button
         onClick={onDownloadAll}
         className="cursor-pointer w-full sm:w-auto px-5 py-3 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#234C90] text-white font-semibold flex items-center justify-center gap-2 hover:from-[#60A5FA] hover:to-[#3B82F6] disabled:opacity-40"
-        disabled={!hasAnyResult || !canDownload}
+        disabled={!hasAnyResult}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
