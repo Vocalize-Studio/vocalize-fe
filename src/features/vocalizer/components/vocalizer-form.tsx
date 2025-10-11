@@ -33,6 +33,8 @@ export default function VocalizerForm({
     isPending,
     jobId,
     onSubmit,
+    phase,
+    sessionKey,
     authDialogOpen,
     setAuthDialogOpen,
     handleClickLogin,
@@ -49,11 +51,11 @@ export default function VocalizerForm({
 
   const { data: job } = useJobStatus(jobId);
   const status = job?.data.status;
-  console.log("status", status);
+  // console.log("status", status);
   const jobProgress = job?.data.progress ?? 0;
-  console.log("jobProgress", jobProgress);
-  const meta = job?.data.metadata;
-  console.log("meta", meta);
+  // console.log("jobProgress", jobProgress);
+  const meta = job?.data.master_outputs;
+  // console.log("meta", meta);
 
   const isProcessing = Boolean(jobId) && status !== "completed";
   console.log("is process", isProcessing);
@@ -68,7 +70,7 @@ export default function VocalizerForm({
     | string
     | File;
 
-  console.log(vocalVal);
+  // console.log(vocalVal);
 
   const vocalFile: File | null = typeof vocalVal === "string" ? null : vocalVal;
 
@@ -81,6 +83,11 @@ export default function VocalizerForm({
     start: simulateUpload,
     cancel: cancelUpload,
   } = useRawVoiceUpload();
+
+  const compositeProgress = phase === "uploading" ? 0 : jobProgress || 0;
+  const statusForDialog = phase === "uploading" ? undefined : status;
+  const detailedStatus =
+    phase === "uploading" ? undefined : meta?.detailed_status;
 
   return (
     <div className="space-y-4 mt-4 px-4 sm:px-0">
@@ -156,13 +163,12 @@ export default function VocalizerForm({
       </Form>
 
       <PreprocessingUpload
-        open={isPending || isProcessing}
+        key={sessionKey}
+        open={isPending || isProcessing || phase === "uploading"}
         fileName={vocalFileName}
-        progress={Number(jobProgress || 0)}
-        status={status}
-        result={{
-          detailed_status: meta?.detailed_status,
-        }}
+        progress={Number(compositeProgress)}
+        status={statusForDialog}
+        result={{ detailed_status: detailedStatus }}
       />
 
       {isPreviewVisible && (

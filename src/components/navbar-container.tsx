@@ -15,7 +15,8 @@ const navItems = ["AI Vocalizer", "Pricing", "Blog", "Library"];
 export default function NavbarContainer({ user }: { user: SessionUser }) {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
-  const isLoggedIn = user.role !== "guest" && !!user.id;
+  const isGuest = user?.role === "guest";
+  const isAuthenticated = !!user?.id && !isGuest;
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 10);
@@ -63,7 +64,7 @@ export default function NavbarContainer({ user }: { user: SessionUser }) {
               </div>
 
               <div className="hidden lg:flex items-center space-x-3 md:mx-16">
-                {isLoggedIn ? (
+                {isAuthenticated ? (
                   <UserMenu user={user!} isScrolled={isScrolled} />
                 ) : (
                   <>
@@ -112,17 +113,13 @@ export default function NavbarContainer({ user }: { user: SessionUser }) {
                   {item}
                 </a>
               ))}
-              {isLoggedIn ? (
-                <UserMenu.Mobile
-                  user={user!}
-                  isScrolled={isScrolled}
-                  onAfterAction={() => setMobileOpen(false)}
-                />
+              {isAuthenticated ? (
+                <UserMenu user={user!} isScrolled={isScrolled} />
               ) : (
-                <div className="flex flex-col gap-3 mt-4">
+                <>
                   <LoginDialog isScrolled={isScrolled} />
                   <RegisterForm isScrolled={isScrolled} />
-                </div>
+                </>
               )}
             </div>
           </div>
