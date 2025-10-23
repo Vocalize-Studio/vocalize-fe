@@ -3,15 +3,8 @@ import { Mode, ResultUrls } from "./use-audio-comparison-preview";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { Capabilities, Role } from "@/lib/role-access";
-import { toast } from "sonner";
 import { trimToWavBlob } from "../utils/audio-trim";
 import { useLoginDialogStore } from "@/store/auth-dialog-store";
-
-// async function fetchAsBlob(url: string) {
-//   const r = await fetch(url, { credentials: "include" });
-//   if (!r.ok) throw new Error(`Failed to fetch: ${r.status}`);
-//   return await r.blob();
-// }
 
 export function useDownloadTrack(
   uploadedFile: File | null,
@@ -27,6 +20,8 @@ export function useDownloadTrack(
   const limitForVocalized =
     activeVersion === "vocalized" ? caps.previewLimitSec : null;
 
+  const isPrivileged = role === "premium" || role === "admin";
+
   const guardAccess = (action: "download this" | "download all"): boolean => {
     if (!caps.allowDownload) {
       if (role === "guest") {
@@ -36,6 +31,12 @@ export function useDownloadTrack(
       openUpgrade();
       return false;
     }
+
+    if (action === "download all" && !isPrivileged) {
+      openUpgrade();
+      return false;
+    }
+
     return true;
   };
 
