@@ -3,7 +3,7 @@ export async function trimToWavBlob(input: string | Blob, maxSeconds: number) {
     (window as any).webkitAudioContext)();
   const arrayBuffer =
     typeof input === "string"
-      ? await (await fetch(input, { credentials: "include" })).arrayBuffer()
+      ? await (await fetch(input)).arrayBuffer()
       : await input.arrayBuffer();
 
   const decoded = await audioCtx.decodeAudioData(arrayBuffer);
