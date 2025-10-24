@@ -55,9 +55,7 @@ export function useDownloadTrack(
       const trimmed = await trimToWavBlob(currentUrl, limitForVocalized);
       saveAs(trimmed, `${baseName}_${tab}_preview.wav`);
     } else {
-      const blob = await (
-        await fetch(currentUrl, { credentials: "include" })
-      ).blob();
+      const blob = await (await fetch(currentUrl)).blob();
       saveAs(blob, `${baseName}_${tab}.wav`);
     }
   };
@@ -78,7 +76,7 @@ export function useDownloadTrack(
       try {
         const fileBlob = caps.previewLimitSec
           ? await trimToWavBlob(url, caps.previewLimitSec)
-          : await (await fetch(url, { credentials: "include" })).blob();
+          : await (await fetch(url)).blob();
         zip.file(
           `${baseName}_${label}${caps.previewLimitSec ? "_preview" : ""}.wav`,
           fileBlob

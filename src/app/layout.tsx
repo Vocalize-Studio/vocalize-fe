@@ -36,13 +36,8 @@ export const metadata: Metadata = {
   title: "Vocalize",
   description: "AI audio separation & enhancement for vocals and instruments.",
   icons: {
-    icon: [
-      { url: "/favicon.ico", type: "image/x-icon" },
-      { url: "/vocalize-logo.svg", type: "image/svg+xml" },
-      { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
-      { url: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
-    ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+    icon: [{ url: "/vocalize-logo.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/vocalize-logo.png", sizes: "180x180" }],
   },
 };
 

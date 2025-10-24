@@ -56,7 +56,7 @@ const Waveform = forwardRef<WaveformHandle, Props>(
         barHeight: 50,
         barRadius: 50,
         barWidth: 3,
-        backend: "MediaElement",
+        backend: "WebAudio",
       });
 
       wsRef.current.on("ready", () => {
